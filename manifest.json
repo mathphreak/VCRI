@@ -1,0 +1,14 @@
+{
+	"name": "VCRI",
+	"version": "0.7",
+	"description": "Various Canvas Rider improvements.",
+	"content_scripts": [
+		{
+			"matches": ["*://canvasrider.com/tracks/*"],
+			"js": ["jquery-1.5.min.js", "work.js"]
+		}
+	],
+	"permissions": [
+		"tabs"
+	]
+}
