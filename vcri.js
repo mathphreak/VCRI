@@ -40,5 +40,5 @@ function randomPositive() {
 };
 function showRandomMenu() {
 	var m = document.getElementById('menu');
-	m.innerHTML += "<br /><a href='javascript:randomPositive();'>Random positive track</a> / <a href='http://canvasrider.com/tracks/random'>Any random track</a>";
+	m.innerHTML += "<hr /><a href='javascript:randomPositive();'>Random positive track</a> / <a href='http://canvasrider.com/tracks/random'>Any random track</a>";
 }
