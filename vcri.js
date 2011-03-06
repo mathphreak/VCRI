@@ -9,11 +9,11 @@ function vote(target, finishMsg) {
 		if (ajax.readyState == 4 && ajax.status == 200) {
 			var response = ajax.responseText;
 			if (response.indexOf('You already voted for that track!') != -1) {
-				s.innerHTML='You already voted for that track!';
+				social.innerHTML='You already voted for that track!';
 			} else if (response.indexOf('Your vote has been refused') != -1) {
-				s.innerHTML='Your vote has been refused.';
+				social.innerHTML='Your vote has been refused.';
 			} else {
-				s.innerHTML=finishMsg;
+				social.innerHTML=finishMsg;
 			}
 		}
 	};
