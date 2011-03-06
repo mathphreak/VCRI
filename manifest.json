@@ -4,11 +4,12 @@
 	"description": "Various Canvas Rider improvements.",
 	"content_scripts": [
 		{
-			"matches": ["*://canvasrider.com/tracks/*"],
+			"matches": ["*://canvasrider.com/*"],
 			"js": ["jquery-1.5.min.js", "work.js"]
 		}
 	],
 	"permissions": [
 		"tabs"
-	]
+	],
+	"update_url": "http://mathphreak.github.com/VCRI/update.xml"
 }
