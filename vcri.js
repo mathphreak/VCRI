@@ -51,11 +51,5 @@ function loopToggle() {
 	var loopMode = localStorage.getItem("loopMode");
 	if (loopMode == null) loopMode = false;
 	localStorage.setItem("loopMode", !loopMode);
-	loopMode = !loopMode;
-	var lmid = document.getElementById('loopMode');
-	if (loopMode) {
-		lmid.innerHTML = "<a href='javascript:loopToggle();'>Loop mode is ON</a></span>");
-	} else {
-		lmid.innerHTML = "<a href='javascript:loopToggle();'>Loop mode is OFF</a></span>");
-	}
+	randomPositive();
 }
