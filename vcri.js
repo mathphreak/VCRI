@@ -1,6 +1,6 @@
 // This is the hosted/injected VCRI code.
 
-function vote(target, finishMsg) {
+function vote(target, finishMsg, loopMode) {
 	var social = document.getElementById('social');
 	social.innerHTML = 'Voting...';
 	var ajax = new XMLHttpRequest();
@@ -14,6 +14,9 @@ function vote(target, finishMsg) {
 				social.innerHTML = 'Your vote has been refused.';
 			} else {
 				social.innerHTML = finishMsg;
+			}
+			if (loopMode) {
+				setTimeout("randomPositive()", 5000);
 			}
 		}
 	};
@@ -38,7 +41,14 @@ function randomPositive() {
 	};
 	ajax.send(null);
 };
+
 function showRandomMenu() {
 	var m = document.getElementById('menu');
 	m.innerHTML += "<hr /><a href='javascript:randomPositive();'>Random positive track</a> / <a href='http://canvasrider.com/tracks/random'>Any random track</a>";
+}
+
+function loopToggle() {
+	var loopMode = localStorage.getItem("loopMode");
+	if (loopMode == null) loopMode = false;
+	localStorage.setItem("loopMode", !loopMode);
 }
