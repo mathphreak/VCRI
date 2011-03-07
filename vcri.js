@@ -49,7 +49,11 @@ function showRandomMenu() {
 
 function loopToggle() {
 	var loopMode = localStorage.getItem("loopMode");
-	if (loopMode == null) loopMode = false;
-	localStorage.setItem("loopMode", !loopMode);
+	if (loopMode == null) loopMode = "disabled";
+	if (loopMode == "disabled") {
+		localStorage.setItem("loopMode", "enabled");
+	} else if (loopMode == "enabled") {
+		localStorage.setItem("loopMode", "disabled");
+	}
 	randomPositive();
 }
