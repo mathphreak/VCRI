@@ -16,7 +16,7 @@ function vote(target, finishMsg, loopMode) {
 				social.innerHTML = finishMsg;
 			}
 			if (loopMode) {
-				setTimeout("randomPositive()", 5000);
+				setTimeout("randomPositive()", 1000);
 			}
 		}
 	};
@@ -52,8 +52,8 @@ function loopToggle() {
 	if (loopMode == null) loopMode = "disabled";
 	if (loopMode == "disabled") {
 		localStorage.setItem("loopMode", "enabled");
+		randomPositive();
 	} else if (loopMode == "enabled") {
 		localStorage.setItem("loopMode", "disabled");
 	}
-	randomPositive();
 }
