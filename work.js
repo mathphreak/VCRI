@@ -5,8 +5,12 @@ newScript.src = 'http://mathphreak.github.com/VCRI/vcri.js?crap=' + Math.random(
 headID.appendChild(newScript);
 
 var loopMode = localStorage.getItem("loopMode");
-if (loopMode == null) loopMode = false;
-var loopIndication = $("<span style='right: 10px;'><a href='javascript:loopToggle();'>Loop mode is " + (loopMode ? "ON" : "OFF") + "</a></span>");
+if (loopMode == null) loopMode = "disabled";
+if (loopMode == "enabled") {
+	var loopIndication = $("<span style='float: right; padding-right: 30px;' id='loopMode'><a href='javascript:loopToggle();'>Loop mode is ON</a></span>");
+} else {
+	var loopIndication = $("<span style='float: right; padding-right: 30px;' id='loopMode'><a href='javascript:loopToggle();'>Loop mode is OFF</a></span>");
+}
 loopIndication.appendTo('#menu');
 
 if (document.URL.match(/tracks\/\d+/) || document.URL.match(/tracks\/random/)) { // we're playing something
@@ -24,10 +28,16 @@ if (document.URL.match(/tracks\/\d+/) || document.URL.match(/tracks\/random/)) {
 		thumbsDown.attr("href", thumbsUp.attr("href").replace("up", "down"));
 	}
 
+	var truefalse;
+	if (loopMode == "enabled") {
+		truefalse = "true";
+	} else {
+		truefalse = "false";
+	}
 	var downUrl = thumbsDown.attr("href");
-	thumbsDown.attr("href", "javascript:vote('" + downUrl + "', 'Voted down.', " + loopMode + ");");
+	thumbsDown.attr("href", "javascript:vote('" + downUrl + "', 'Voted down.', " + truefalse + ");");
 	var upUrl = thumbsUp.attr("href");
-	thumbsUp.attr("href", "javascript:vote('" + upUrl + "', 'Voted up.', " + loopMode + ");");
+	thumbsUp.attr("href", "javascript:vote('" + upUrl + "', 'Voted up.', " + truefalse + ");");
 }
 
 var navMenu = $("#menu");
