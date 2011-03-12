@@ -57,3 +57,18 @@ function loopToggle() {
 		localStorage.setItem("loopMode", "disabled");
 	}
 }
+
+function saveSettings(ajaxv, insertd, randomm, offerl) {
+	localStorage.setItem("settings-ajaxvoting", ajaxv);
+	localStorage.setItem("settings-insertdown", insertd);
+	localStorage.setItem("settings-randommenu", randomm);
+	localStorage.setItem("settings-offerloop", offerl);
+}
+
+function saveAllSettings() {
+	var ajaxVote = document.getElementById("ajaxvoting").checked;
+	var nsrtDown = document.getElementById("insertdown").checked;
+	var rndmMenu = document.getElementById("randommenu").checked;
+	var offrLoop = document.getElementById("offerloop").checked;
+	saveSettings(ajaxVote, nsrtDown, rndmMenu, offrLoop);
+}
