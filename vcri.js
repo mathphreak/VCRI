@@ -68,7 +68,7 @@ function saveSettings(ajaxv, insertd, randomm, offerl) {
 function saveAllSettings() {
 	var ajaxVote = document.getElementById("ajaxvoting").checked;
 	var nsrtDown = document.getElementById("insertdown").checked;
-	var rndmMenu = document.getElementById("randommenu").checked;
-	var offrLoop = document.getElementById("offerloop").checked;
+	var rndmMenu = document.getElementById("randompwnd").checked;
+	var offrLoop = document.getElementById("showloopon").checked;
 	saveSettings(ajaxVote, nsrtDown, rndmMenu, offrLoop);
 }
