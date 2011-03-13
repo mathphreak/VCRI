@@ -84,4 +84,6 @@ function loadSettings() {
 	document.getElementById("showloopon").checked = offrLoop;
 }
 
-loadSettings();
+if (document.URL.indexOf("#settings") != -1) {
+	loadSettings();
+}
