@@ -72,3 +72,14 @@ function saveAllSettings() {
 	var offrLoop = document.getElementById("showloopon").checked;
 	saveSettings(ajaxVote, nsrtDown, rndmMenu, offrLoop);
 }
+
+function loadSettings() {
+	var ajaxVote = localStorage.getItem("settings-ajaxvoting");
+	var nsrtDown = localStorage.getItem("settings-insertdown");
+	var rndmMenu = localStorage.getItem("settings-randommenu");
+	var offrLoop = localStorage.getItem("settings-offerloop");
+	document.getElementById("ajaxvoting").checked = ajaxVote;
+	document.getElementById("insertdown").checked = nsrtDown;
+	document.getElementById("randompwnd").checked = rndmMenu;
+	document.getElementById("showloopon").checked = offrLoop;
+}
