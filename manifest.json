@@ -1,6 +1,6 @@
 {
 	"name": "VCRI",
-	"version": "1.2",
+	"version": "1.4",
 	"description": "Various (unofficial) Canvas Rider improvements.",
 	"content_scripts": [
 		{
@@ -11,5 +11,7 @@
 	"permissions": [
 		"tabs"
 	],
-	"update_url": "http://mathphreak.github.com/VCRI/update.xml"
+	"update_url": "http://mathphreak.github.com/VCRI/update.xml",
+	"homepage_url": "http://mathphreak.github.com/VCRI/",
+	"options_page": "settings.html"
 }
