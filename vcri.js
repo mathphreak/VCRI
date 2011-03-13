@@ -78,10 +78,10 @@ function loadSettings() {
 	var nsrtDown = localStorage.getItem("settings-insertdown");
 	var rndmMenu = localStorage.getItem("settings-randommenu");
 	var offrLoop = localStorage.getItem("settings-offerloop");
-	document.getElementById("ajaxvoting").checked = ajaxVote;
-	document.getElementById("insertdown").checked = nsrtDown;
-	document.getElementById("randompwnd").checked = rndmMenu;
-	document.getElementById("showloopon").checked = offrLoop;
+	document.getElementById("ajaxvoting").checked = (ajaxVote == "true");
+	document.getElementById("insertdown").checked = (nsrtDown == "true");
+	document.getElementById("randompwnd").checked = (rndmMenu == "true");
+	document.getElementById("showloopon").checked = (offrLoop == "true");
 }
 
 if (document.URL.indexOf("#settings") != -1) {
