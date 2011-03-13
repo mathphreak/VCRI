@@ -83,3 +83,5 @@ function loadSettings() {
 	document.getElementById("randompwnd").checked = rndmMenu;
 	document.getElementById("showloopon").checked = offrLoop;
 }
+
+loadSettings();
