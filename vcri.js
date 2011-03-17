@@ -58,12 +58,13 @@ function loopToggle() {
 	}
 }
 
-function saveSettings(ajaxv, insertd, randomm, offerl, settlnk) {
+function saveSettings(ajaxv, insertd, randomm, offerl, settlnk, macleod) {
 	localStorage.setItem("settings-ajaxvoting", ajaxv);
 	localStorage.setItem("settings-insertdown", insertd);
 	localStorage.setItem("settings-randommenu", randomm);
 	localStorage.setItem("settings-offerloop", offerl);
 	localStorage.setItem("settings-showlink", settlnk);
+	localStorage.setItem("settings-showmusic", macleod);
 }
 
 function saveAllSettings() {
@@ -72,7 +73,8 @@ function saveAllSettings() {
 	var rndmMenu = document.getElementById("randompwnd").checked;
 	var offrLoop = document.getElementById("showloopon").checked;
 	var settLink = document.getElementById("shwthislnk").checked;
-	saveSettings(ajaxVote, nsrtDown, rndmMenu, offrLoop, settLink);
+	var musicpwn = document.getElementById("incompetek").checked;
+	saveSettings(ajaxVote, nsrtDown, rndmMenu, offrLoop, settLink, musicpwn);
 }
 
 function loadSettings() {
@@ -81,11 +83,13 @@ function loadSettings() {
 	var rndmMenu = localStorage.getItem("settings-randommenu");
 	var offrLoop = localStorage.getItem("settings-offerloop");
 	var settLink = localStorage.getItem("settings-showlink");
+	var musicpwn = localStorage.getItem("settings-showmusic");
 	document.getElementById("ajaxvoting").checked = (ajaxVote == "true");
 	document.getElementById("insertdown").checked = (nsrtDown == "true");
 	document.getElementById("randompwnd").checked = (rndmMenu == "true");
 	document.getElementById("showloopon").checked = (offrLoop == "true");
 	document.getElementById("shwthislnk").checked = (settLink == "true");
+	document.getElementById("incompetek").checked = (musicpwn == "true");
 }
 
 if (document.URL.indexOf("#settings") != -1) {
