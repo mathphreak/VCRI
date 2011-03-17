@@ -13,5 +13,6 @@
 	],
 	"update_url": "http://mathphreak.github.com/VCRI/update.xml",
 	"homepage_url": "http://mathphreak.github.com/VCRI/",
-	"options_page": "settings.html"
+	"options_page": "settings.html",
+	"background_page": "background.html"
 }

@@ -1,0 +1,101 @@
+<html>
+<head>
+<script type="text/javascript" src="jquery-1.5.min.js"></script>
+<script type="text/javascript">
+var songURLs = new Array(11);
+songURLs[0] = "http://music.incompetech.com/royalty-free/Windswept.mp3";
+songURLs[1] = "http://music.incompetech.com/royalty-free/Cattails.mp3";
+songURLs[2] = "http://music.incompetech.com/royalty-free/New%20Friendly.mp3";
+songURLs[3] = "http://music.incompetech.com/royalty-free/Somewhere%20Sunny%20(ver%202).mp3";
+songURLs[4] = "http://music.incompetech.com/royalty-free/Sunshine%20A.mp3";
+songURLs[5] = "http://music.incompetech.com/royalty-free/Deliberate%20Thought.mp3";
+songURLs[6] = "http://music.incompetech.com/royalty-free/Somewhere%20Sunny.mp3";
+songURLs[7] = "http://music.incompetech.com/royalty-free/Happy%20Alley.mp3";
+songURLs[8] = "http://music.incompetech.com/royalty-free/Revival.mp3";
+songURLs[9] = "http://music.incompetech.com/royalty-free/Aretes.mp3";
+songURLs[10] = "http://music.incompetech.com/royalty-free/How%20it%20Begins.mp3";
+
+var audioURL;
+var audioObject;
+var audioPlaying = false;
+function chooseAudio() {
+	audioURL = undefined;
+	audioObject = undefined;
+/*	$.get("http://incompetech.com/m/c/royalty-free/index.html?keywords=017&Search=Search", function(data, textStatus, jqXHR) {
+		var dat = $(data);
+		var linklist = dat.filter(".music");
+		var linklistlength = linklist.length;
+		var randidx = Math.floor(Math.random() * linklistlength);
+		var chosen = linklist.slice(randidx).first;
+		var chosenURL = chosen.attr("href");
+		audioURL = chosenURL;
+	});*/ // ajax doesn't work for me
+	var randidx = Math.floor(Math.random() * songURLs.length);
+	audioURL = songURLs[randidx];
+}
+
+function pauseAudio() {
+	audioObject.pause();
+	audioPlaying = false;
+}
+
+function playAudio() {
+	if (audioObject == undefined) {
+		chooseAudio();
+		while (audioURL == undefined) {
+			// busy wait
+		}
+		loadAudio(false);
+	}
+	audioObject.play();
+	audioPlaying = true;
+}
+
+function loadAudio(autoplay) {
+	audioObject = new Audio();
+	audioObject.src = audioURL;
+	if (!!autoplay) { // if we didn't get an autoplay argument, assume it was true
+		audioObject.onload = playAudio;
+	}
+	audioObject.onend = nextAudio;
+	audioObject.load();
+}
+
+function checkChosen(autoplay) {
+	if (audioURL == undefined) {
+		loadAudio(autoplay);
+	} else {
+		setTimeout("checkChosen(" + autoplay + ")", 100);
+	}
+}
+
+function nextAudio(autoplay) {
+	if (audioPlaying) {
+		pauseAudio();
+	}
+	chooseAudio();
+	checkChosen(autoplay);
+}
+
+chrome.extension.onRequest.addListener(
+	function(request, sender, sendResponse) {
+		console.log(sender.tab ?
+					"from a content script:" + sender.tab.url :
+					"from the extension");
+		if (request.command == "play") {
+			playAudio();
+			sendResponse({farewell: "goodbye"});
+		} else if (request.command == "pause") {
+			pauseAudio();
+			sendResponse({});
+		}
+	}
+);
+</script>
+</head>
+<body>
+Hey, man.
+
+<a href="javascript:nextAudio(true);">Choose and play audio</a><br />
+</body>
+</html>
