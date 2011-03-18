@@ -18,6 +18,8 @@ songURLs[10] = "http://music.incompetech.com/royalty-free/How%20it%20Begins.mp3"
 var audioURL;
 var audioObject;
 var audioPlaying = false;
+var wasPlaying = false;
+var wasPlayingIsCurrent = false;
 function chooseAudio() {
 	audioURL = undefined;
 	audioObject = undefined;
@@ -35,7 +37,9 @@ function chooseAudio() {
 }
 
 function pauseAudio() {
-	audioObject.pause();
+	if (audioObject != undefined) {
+		audioObject.pause();
+	}
 	audioPlaying = false;
 }
 
@@ -54,7 +58,7 @@ function playAudio() {
 function loadAudio(autoplay) {
 	audioObject = new Audio();
 	audioObject.src = audioURL;
-	if (!!autoplay) { // if we didn't get an autoplay argument, assume it was true
+	if (autoplay) {
 		audioObject.onload = playAudio;
 	}
 	audioObject.onend = nextAudio;
@@ -70,11 +74,17 @@ function checkChosen(autoplay) {
 }
 
 function nextAudio(autoplay) {
+	var ap;
+	if (autoplay == undefined) {
+		ap = audioPlaying;
+	} else {
+		ap = autoplay;
+	}
 	if (audioPlaying) {
 		pauseAudio();
 	}
 	chooseAudio();
-	checkChosen(autoplay);
+	checkChosen(ap);
 }
 
 chrome.extension.onRequest.addListener(
@@ -88,9 +98,29 @@ chrome.extension.onRequest.addListener(
 		} else if (request.command == "pause") {
 			pauseAudio();
 			sendResponse({});
+		} else if (request.command == "next") {
+			nextAudio();
+			sendResponse({});
 		}
 	}
 );
+
+chrome.tabs.onSelectionChanged.addListener(function(tabId, selectInfo) {
+	chrome.tabs.get(tabId, function(tab) {
+		if (tab.url.indexOf("canvasrider.com") == -1) {
+			if (!wasPlayingIsCurrent) {
+				wasPlaying = audioPlaying;
+				wasPlayingIsCurrent = true;
+				pauseAudio();
+			}
+		} else {
+			if (wasPlaying) {
+				playAudio();
+			}
+			wasPlayingIsCurrent = false;
+		}
+	});
+});
 </script>
 </head>
 <body>

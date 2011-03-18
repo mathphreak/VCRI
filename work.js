@@ -18,7 +18,7 @@ if (document.URL.indexOf("#settings") != -1) {
 	$("<tr><td><input type='checkbox' id='randompwnd' onchange='saveAllSettings()' /></td><td>Random menu (positive / apathetic)</td></tr>").appendTo("#settings-table");
 	$("<tr><td><input type='checkbox' id='showloopon' onchange='saveAllSettings()' /></td><td>Offer loop mode (random positive track on voting)</td></tr>").appendTo("#settings-table");
 	$("<tr><td><input type='checkbox' id='shwthislnk' onchange='saveAllSettings()' /></td><td>Show link to settings</td></tr>").appendTo("#settings-table");
-	$("<tr><td><input type='checkbox' id='incompetek' onchange='saveAllSettings()' /></td><td>Music: <a href='incompetech.com'>Kevin MacLeod</a></td></tr>").appendTo("#settings-table");
+	$("<tr><td><input type='checkbox' id='incompetek' onchange='saveAllSettings()' /></td><td>Music: <a href='http://incompetech.com'>Kevin MacLeod</a></td></tr>").appendTo("#settings-table");
 	$("title").html($("title").html() + " - VCRI Settings");
 }
 
@@ -43,17 +43,22 @@ if (useSettings == "true") {
 }
 
 if (useMusic == "true") {
-	var musicControls = $("<span id='playMusic'><a href='javascript:void(0);'>\u25B6</a></span><span id='pauseMusic'><a href='javascript:void(0);'>\u2016</a></span><span style='width: 20px;' />");
+	var musicControls = $("<span id='playMusic'><a href='javascript:void(0);'>\u25B6</a></span>");
+	$("<span id='pauseMusic'><a href='javascript:void(0);'>\u2016</a></span>").appendTo(musicControls);
+	$("<span id='nextMusic'><a href='javascript:void(0);'>|\u25B6</a></span><span style='width: 20px;' />").appendTo(musicControls);
 	musicControls.prependTo("#settingsLink");
 	$("#playMusic").click(function() {
 		chrome.extension.sendRequest({command: "play"}, function(response) {
 			console.log(response.farewell);
 		});
 	});
-	$("#playMusic").click();
 	$("#pauseMusic").click(function() {
 		chrome.extension.sendRequest({command: "pause"}, function(response) {
 			console.log(response.farewell);
+		});
+	});
+	$("#nextMusic").click(function() {
+		chrome.extension.sendRequest({command: "next"}, function(response) {
 		});
 	});
 }
