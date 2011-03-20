@@ -1,6 +1,6 @@
 {
 	"name": "VCRI",
-	"version": "1.4",
+	"version": "1.6",
 	"description": "Various (unofficial) Canvas Rider improvements.",
 	"content_scripts": [
 		{
