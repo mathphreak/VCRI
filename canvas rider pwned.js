@@ -1,17 +1,17 @@
 // Canvas Rider RC7 by Pete & Maxime, a canvasrider.com exclusive
 // De-minified and working on readability
-
-// Bk relates to BMX
+// Bk relates to BMX, and Bn to MTB
+// Scenery lines come after normal lines in trackcodes
 
 function Location(x, y) {
     this.x = x;
     this.y = y;
 }
-Location.prototype.o = function () {
-    return new Location((this.x - C.A5.x) * C.H + canvas.width / 2, (this.y - C.A5.y) * C.H + canvas.height / 2);
+Location.prototype.normalizeToWorld = function () {
+    return new Location((this.x - theTrack.cameraCenter.x) * theTrack.zoomFactor + canvas.width / 2, (this.y - theTrack.cameraCenter.y) * theTrack.zoomFactor + canvas.height / 2);
 };
-Location.prototype.Cr = function () {
-    return new Location((this.x - canvas.width / 2) / C.H + C.A5.x, (this.y - canvas.height / 2) / C.H + C.A5.y);
+Location.prototype.normalizeToCanvas = function () {
+    return new Location((this.x - canvas.width / 2) / theTrack.zoomFactor + theTrack.cameraCenter.x, (this.y - canvas.height / 2) / theTrack.zoomFactor + theTrack.cameraCenter.y);
 };
 Location.prototype.set = function (U) {
     this.x = U.x;
@@ -62,7 +62,7 @@ Ah.prototype.AO = function () {
     this.place.add(this.g);
     this.BR = false;
     if (this.Ad) {
-        C.Ad(this);
+        theTrack.Ad(this);
     }
     this.g = this.place.cloneSub(this._);
     this._.set(this.place);
@@ -82,7 +82,7 @@ function Ba(G, parent) {
 }
 Ba.prototype.drive = function (O) {
     this.place.add(O.cloneScale(this.AX * this.parent.O));
-    if (this.AR) {
+    if (this.down) {
         this.place.add(O.cloneScale(-O.dotProduct(this.g) * 0.3));
     }
     this.Bq = O.dotProduct(this.g) / this.Al;
@@ -94,7 +94,7 @@ Ba.prototype.AO = function () {
     this.place.add(this.g);
     this.BR = false;
     if (this.Ad) {
-        C.Ad(this);
+        theTrack.Ad(this);
     }
     this.g = this.place.cloneSub(this._);
     this._.set(this.place);
@@ -113,7 +113,7 @@ function By(G, parent) {
     this.DG = new Array(1, 0.7, 0.8, 0.9, 0.5, 1, 0.7, 1);
 }
 By.prototype.draw = function () {
-    var M = this.place.o();
+    var M = this.place.normalizeToWorld();
     this.rotation += this.Bq;
     var AS = this.DG[0] * this.Al / 2;
     var L = M.x + AS * Math.cos(this.rotation);
@@ -145,7 +145,7 @@ By.prototype.AO = function () {
     this.place.add(this.g);
     this.BR = false;
     if (this.Ad) {
-        C.Ad(this);
+        theTrack.Ad(this);
     }
     this.g = this.place.cloneSub(this._);
     this._.set(this.place);
@@ -198,19 +198,19 @@ Ac.prototype.Aq = function () {
     this.A4.rotation = Da;
 };
 
-function Bk() {
+function Bk() { // connected with BMX only - maybe BMX bike itself?
     this.D = new Array;
-    this.D.push(new Ah(new Location(Z[Z.length - 1][0], Z[Z.length - 1][1]), this));
-    this.D[0]._ = new Location(Z[Z.length - 1][2], Z[Z.length - 1][3]);
-    this.D[0].g = new Location(Z[Z.length - 1][4], Z[Z.length - 1][5]);
-    this.D.push(new Ba(new Location(Z[Z.length - 1][6], Z[Z.length - 1][7]), this));
-    this.D[1]._ = new Location(Z[Z.length - 1][8], Z[Z.length - 1][9]);
-    this.D[1].g = new Location(Z[Z.length - 1][10], Z[Z.length - 1][11]);
-    this.D[1].AX = Z[Z.length - 1][12];
-    this.D.push(new Ba(new Location(Z[Z.length - 1][13], Z[Z.length - 1][14]), this));
-    this.D[2]._ = new Location(Z[Z.length - 1][15], Z[Z.length - 1][16]);
-    this.D[2].g = new Location(Z[Z.length - 1][17], Z[Z.length - 1][18]);
-    this.D[2].AX = Z[Z.length - 1][19];
+    this.D.push(new Ah(new Location(bmxConstants[bmxConstants.length - 1][0], bmxConstants[bmxConstants.length - 1][1]), this));
+    this.D[0]._ = new Location(bmxConstants[bmxConstants.length - 1][2], bmxConstants[bmxConstants.length - 1][3]);
+    this.D[0].g = new Location(bmxConstants[bmxConstants.length - 1][4], bmxConstants[bmxConstants.length - 1][5]);
+    this.D.push(new Ba(new Location(bmxConstants[bmxConstants.length - 1][6], bmxConstants[bmxConstants.length - 1][7]), this));
+    this.D[1]._ = new Location(bmxConstants[bmxConstants.length - 1][8], bmxConstants[bmxConstants.length - 1][9]);
+    this.D[1].g = new Location(bmxConstants[bmxConstants.length - 1][10], bmxConstants[bmxConstants.length - 1][11]);
+    this.D[1].AX = bmxConstants[bmxConstants.length - 1][12];
+    this.D.push(new Ba(new Location(bmxConstants[bmxConstants.length - 1][13], bmxConstants[bmxConstants.length - 1][14]), this));
+    this.D[2]._ = new Location(bmxConstants[bmxConstants.length - 1][15], bmxConstants[bmxConstants.length - 1][16]);
+    this.D[2].g = new Location(bmxConstants[bmxConstants.length - 1][17], bmxConstants[bmxConstants.length - 1][18]);
+    this.D[2].AX = bmxConstants[bmxConstants.length - 1][19];
     this.h = this.D[0];
     this.h.Al = 14;
     this.h.drive = function () {
@@ -226,39 +226,39 @@ function Bk() {
     this.S.push(new Ac(this.D[2], this.D[0], this));
     this.AM = this.S[0];
     this.AM.A1 = 45;
-    this.AM.AB = Z[Z.length - 1][20];
+    this.AM.AB = bmxConstants[bmxConstants.length - 1][20];
     this.AM.BC = 0.35;
     this.AM.BE = 0.3;
     this.AQ = this.S[1];
     this.AQ.A1 = 42;
-    this.AQ.AB = Z[Z.length - 1][21];
+    this.AQ.AB = bmxConstants[bmxConstants.length - 1][21];
     this.AQ.BC = 0.35;
     this.AQ.BE = 0.3;
     this.AU = this.S[2];
     this.AU.A1 = 45;
-    this.AU.AB = Z[Z.length - 1][22];
+    this.AU.AB = bmxConstants[bmxConstants.length - 1][22];
     this.AU.BC = 0.35;
     this.AU.BE = 0.3;
     this.save = false;
     this.A9 = false;
     this.At = 0;
-    this.O = Z[Z.length - 1][23];
-    this.Af = new Location(Z[Z.length - 1][24], Z[Z.length - 1][25]);
-    this.A8 = Z[Z.length - 1][26];
-    C.Be = Z[Z.length - 1][27];
-    for (var j = 0; j < C.AD.length; j++) {
-        C.AD[j].BM = Z[Z.length - 1][28][j];
+    this.O = bmxConstants[bmxConstants.length - 1][23];
+    this.Af = new Location(bmxConstants[bmxConstants.length - 1][24], bmxConstants[bmxConstants.length - 1][25]);
+    this.A8 = bmxConstants[bmxConstants.length - 1][26];
+    theTrack.targetsReached = bmxConstants[bmxConstants.length - 1][27];
+    for (var j = 0; j < theTrack.objects.length; j++) {
+        theTrack.objects[j].BM = bmxConstants[bmxConstants.length - 1][28][j];
     }
     this.Bj = 0;
     this.Bm = 0;
     this.Br = 0;
     this.Bo = 0;
-    this.z = Z[Z.length - 1][29];
+    this.z = bmxConstants[bmxConstants.length - 1][29];
     if (this.z) {
-        this.Bj = Z[Z.length - 1][30];
-        this.Bm = Z[Z.length - 1][31];
-        this.Br = Z[Z.length - 1][32];
-        this.Bo = Z[Z.length - 1][33];
+        this.Bj = bmxConstants[bmxConstants.length - 1][30];
+        this.Bm = bmxConstants[bmxConstants.length - 1][31];
+        this.Br = bmxConstants[bmxConstants.length - 1][32];
+        this.Bo = bmxConstants[bmxConstants.length - 1][33];
         for (var BD = 0; BD < AZ.length; BD++) {
             for (var BJ in AZ[BD]) {
                 if (BJ >= this.z) {
@@ -280,8 +280,8 @@ Bk.prototype.Aq = function () {
 };
 Bk.prototype.DC = function () {
     this.save = false;
-    if (C.BU && C.Be == C.BU) {
-        if (this.z > 5000 && (!C.z || this.z < C.z) && (AZ[0].length || AZ[1].length) && C.ID != undefined) {
+    if (theTrack.numTargets && theTrack.targetsReached == theTrack.numTargets) {
+        if (this.z > 5000 && (!theTrack.z || this.z < theTrack.z) && (AZ[0].length || AZ[1].length) && theTrack.ID != undefined) {
             var Ao = document.cookie.indexOf("; ID=");
             if (Ao == -1 && !document.cookie.indexOf("ID=")) {
                 Ao = -2;
@@ -307,20 +307,20 @@ Bk.prototype.DC = function () {
                     request.open("POST", "js/save.php", false);
                     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                     request.setRequestHeader("User-Agent", "CanvasRider");
-                    request.send("trackID=" + C.ID + "&playerID=" + ID + "&vehicle=" + B3 + "&time=" + this.z + "&controls=" + AT);
+                    request.send("trackID=" + theTrack.ID + "&playerID=" + ID + "&vehicle=" + currentBike + "&time=" + this.z + "&controls=" + AT);
                 }
             } else {
                 alert("You just set a new track record!\nRegister & log in to save your run next time!");
             }
-            left = right = AW = AR = 0;
+            left = right = up = down = 0;
         }
     } else {
-        Z.push(new Array(this.D[0].place.x, this.D[0].place.y, this.D[0]._.x, this.D[0]._.y, this.D[0].g.x, this.D[0].g.y, this.D[1].place.x, this.D[1].place.y, this.D[1]._.x, this.D[1]._.y, this.D[1].g.x, this.D[1].g.y, this.D[1].AX, this.D[2].place.x, this.D[2].place.y, this.D[2]._.x, this.D[2]._.y, this.D[2].g.x, this.D[2].g.y, this.D[2].AX, this.S[0].AB, this.S[1].AB, this.S[2].AB, this.O, this.Af.x, this.Af.y, this.A8, C.Be, new Array, this.z, this.Bj, this.Bm, this.Br, this.Bo));
-        for (var j = 0; j < C.AD.length; j++) {
-            Z[Z.length - 1][28].push(C.AD[j].BM);
+        bmxConstants.push(new Array(this.D[0].place.x, this.D[0].place.y, this.D[0]._.x, this.D[0]._.y, this.D[0].g.x, this.D[0].g.y, this.D[1].place.x, this.D[1].place.y, this.D[1]._.x, this.D[1]._.y, this.D[1].g.x, this.D[1].g.y, this.D[1].AX, this.D[2].place.x, this.D[2].place.y, this.D[2]._.x, this.D[2]._.y, this.D[2].g.x, this.D[2].g.y, this.D[2].AX, this.S[0].AB, this.S[1].AB, this.S[2].AB, this.O, this.Af.x, this.Af.y, this.A8, theTrack.targetsReached, new Array, this.z, this.Bj, this.Bm, this.Br, this.Bo));
+        for (var j = 0; j < theTrack.objects.length; j++) {
+            bmxConstants[bmxConstants.length - 1][28].push(theTrack.objects[j].BM);
         }
         if (W) {
-            K.push(new Array(W.D[0].place.x, W.D[0].place.y, W.D[0]._.x, W.D[0]._.y, W.D[0].g.x, W.D[0].g.y, W.D[1].place.x, W.D[1].place.y, W.D[1]._.x, W.D[1]._.y, W.D[1].g.x, W.D[1].g.y, W.D[1].AX, W.D[2].place.x, W.D[2].place.y, W.D[2]._.x, W.D[2]._.y, W.D[2].g.x, W.D[2].g.y, W.D[2].AX, W.S[0].AB, W.S[1].AB, W.S[2].AB, W.O, W.Af.x, W.Af.y, W.A8, W.left, W.right, W.AW, W.AR));
+            K.push(new Array(W.D[0].place.x, W.D[0].place.y, W.D[0]._.x, W.D[0]._.y, W.D[0].g.x, W.D[0].g.y, W.D[1].place.x, W.D[1].place.y, W.D[1]._.x, W.D[1]._.y, W.D[1].g.x, W.D[1].g.y, W.D[1].AX, W.D[2].place.x, W.D[2].place.y, W.D[2]._.x, W.D[2]._.y, W.D[2].g.x, W.D[2].g.y, W.D[2].AX, W.S[0].AB, W.S[1].AB, W.S[2].AB, W.O, W.Af.x, W.Af.y, W.A8, W.left, W.right, W.up, W.down));
         }
     }
 };
@@ -328,29 +328,29 @@ Bk.prototype.BS = function () {
     if (Aq) {
         this.Aq();
     }
-    this.Q.AX += (AW - this.D[1].AX) / 10;
-    if (AW) {
+    this.Q.AX += (up - this.D[1].AX) / 10;
+    if (up) {
         this.At += this.Q.Bq / 5;
     }
-    this.Q.AR = this.AI.AR = AR;
+    this.Q.down = this.AI.down = down;
     var As = left - right;
     this.AM.A3(As * 5 * this.O, 5);
     this.AU.A3(-As * 5 * this.O, 5);
     this.AQ.rotate(As / 6);
-    if (!As && AW) {
+    if (!As && up) {
         this.AM.A3(-7, 5);
         this.AU.A3(7, 5);
     }
 };
 Bk.prototype.draw = function () {
-    var Q = this.Q.place.o();
-    var AI = this.AI.place.o();
+    var Q = this.Q.place.normalizeToWorld();
+    var AI = this.AI.place.normalizeToWorld();
     graphics.beginPath();
     graphics.strokeStyle = "black";
-    graphics.lineWidth = 3.5 * C.H;
-    graphics.arc(Q.x, Q.y, 10 * C.H, 0, 2 * Math.PI, true);
-    graphics.moveTo(AI.x + 10 * C.H, AI.y);
-    graphics.arc(AI.x, AI.y, 10 * C.H, 0, 2 * Math.PI, true);
+    graphics.lineWidth = 3.5 * theTrack.zoomFactor;
+    graphics.arc(Q.x, Q.y, 10 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
+    graphics.moveTo(AI.x + 10 * theTrack.zoomFactor, AI.y);
+    graphics.arc(AI.x, AI.y, 10 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.stroke();
     var length = AI.cloneSub(Q);
     var AC = new Location((AI.y - Q.y) * this.O, (Q.x - AI.x) * this.O);
@@ -359,14 +359,14 @@ Bk.prototype.draw = function () {
     var Cf = Q.cloneAdd(length.cloneScale(0.84)).cloneAdd(AC.cloneScale(0.37));
     var BG = Q.cloneAdd(length.cloneScale(0.4)).cloneAdd(AC.cloneScale(0.05));
     graphics.beginPath();
-    graphics.lineWidth = 3 * C.H;
+    graphics.lineWidth = 3 * theTrack.zoomFactor;
     graphics.moveTo(Q.x, Q.y);
     graphics.lineTo(A$.x, A$.y);
     graphics.lineTo(Ca.x, Ca.y);
     graphics.moveTo(Cf.x, Cf.y);
     graphics.lineTo(BG.x, BG.y);
     graphics.lineTo(Q.x, Q.y);
-    var CY = new Location(6 * Math.cos(this.At) * C.H, 6 * Math.sin(this.At) * C.H);
+    var CY = new Location(6 * Math.cos(this.At) * theTrack.zoomFactor, 6 * Math.sin(this.At) * theTrack.zoomFactor);
     var BV = BG.cloneAdd(CY);
     var BW = BG.cloneSub(CY);
     graphics.moveTo(BV.x, BV.y);
@@ -394,19 +394,19 @@ Bk.prototype.draw = function () {
     if (this.A9) {
         return;
     }
-    var h = this.h.place.o();
+    var h = this.h.place.normalizeToWorld();
     AC = h.cloneSub(Q.cloneAdd(length.cloneScale(0.5)));
     var An = A$.cloneAdd(length.cloneScale(-0.1)).cloneAdd(AC.cloneScale(0.3));
     var Ar = BV.cloneSub(An);
     var BA = new Location(Ar.y * this.O, -Ar.x * this.O);
-    BA = BA.cloneScale(C.H * C.H);
+    BA = BA.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var Cn = An.cloneAdd(Ar.cloneScale(0.5)).cloneAdd(BA.cloneScale(200 / Ar.lengthSquared()));
     Ar = BW.cloneSub(An);
     BA = new Location(Ar.y * this.O, -Ar.x * this.O);
-    BA = BA.cloneScale(C.H * C.H);
+    BA = BA.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var Co = An.cloneAdd(Ar.cloneScale(0.5)).cloneAdd(BA.cloneScale(200 / Ar.lengthSquared()));
     graphics.beginPath();
-    graphics.lineWidth = 6 * C.H;
+    graphics.lineWidth = 6 * theTrack.zoomFactor;
     graphics.strokeStyle = "rgba(0, 0, 0, 0.5)";
     graphics.moveTo(BW.x, BW.y);
     graphics.lineTo(Co.x, Co.y);
@@ -420,7 +420,7 @@ Bk.prototype.draw = function () {
     graphics.stroke();
     var BY = A$.cloneAdd(length.cloneScale(0.05)).cloneAdd(AC.cloneScale(0.9));
     graphics.beginPath();
-    graphics.lineWidth = 8 * C.H;
+    graphics.lineWidth = 8 * theTrack.zoomFactor;
     graphics.moveTo(An.x, An.y);
     graphics.lineTo(BY.x, BY.y);
     graphics.stroke();
@@ -428,18 +428,18 @@ Bk.prototype.draw = function () {
     var Ch = A$.cloneAdd(length.cloneScale(0.4)).cloneAdd(AC.cloneScale(1.1));
     var Cd = A$.cloneAdd(length.cloneScale(0.05)).cloneAdd(AC.cloneScale(1.05));
     graphics.beginPath();
-    graphics.lineWidth = 2 * C.H;
-    graphics.moveTo(Bs.x + 5 * C.H, Bs.y);
-    graphics.arc(Bs.x, Bs.y, 5 * C.H, 0, 2 * Math.PI, true);
+    graphics.lineWidth = 2 * theTrack.zoomFactor;
+    graphics.moveTo(Bs.x + 5 * theTrack.zoomFactor, Bs.y);
+    graphics.arc(Bs.x, Bs.y, 5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.moveTo(Ch.x, Ch.y);
     graphics.lineTo(Cd.x, Cd.y);
     graphics.stroke();
     length = BY.cloneSub(BL);
     AC = new Location(length.y * this.O, -length.x * this.O);
-    AC = AC.cloneScale(C.H * C.H);
+    AC = AC.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var CV = BL.cloneAdd(length.cloneScale(0.4)).cloneAdd(AC.cloneScale(130 / length.lengthSquared()));
     graphics.beginPath();
-    graphics.lineWidth = 5 * C.H;
+    graphics.lineWidth = 5 * theTrack.zoomFactor;
     graphics.moveTo(BY.x, BY.y);
     graphics.lineTo(CV.x, CV.y);
     graphics.lineTo(BL.x, BL.y);
@@ -471,8 +471,8 @@ Bk.prototype.DB = function () {
     this.A9 = true;
     this.h.drive = function () {};
     this.Q.AX = 0;
-    this.Q.AR = false;
-    this.AI.AR = false;
+    this.Q.down = false;
+    this.AI.down = false;
     this.h.Ad = false;
     AP = new Cp(this, this.C1());
 };
@@ -488,13 +488,13 @@ Bk.prototype.AO = function () {
         AZ[1][this.z] = 1;
         this.Bm = right;
     }
-    if (AW != this.Br) {
+    if (up != this.Br) {
         AZ[2][this.z] = 1;
-        this.Br = AW;
+        this.Br = up;
     }
-    if (AR != this.Bo) {
+    if (down != this.Bo) {
         AZ[3][this.z] = 1;
-        this.Bo = AR;
+        this.Bo = down;
     }
     if (Aq) {
         AZ[4][this.z] = 1;
@@ -570,8 +570,8 @@ function Cb(AT) {
     this.A8 = K[K.length - 1][26];
     this.left = K[K.length - 1][27];
     this.right = K[K.length - 1][28];
-    this.AW = K[K.length - 1][29];
-    this.AR = K[K.length - 1][30];
+    this.up = K[K.length - 1][29];
+    this.down = K[K.length - 1][30];
     this.AT = AT;
     this.z = this.AT[5];
 }
@@ -583,29 +583,29 @@ Cb.prototype.Aq = function () {
     this.AU.AB = AM;
 };
 Cb.prototype.BS = function () {
-    this.Q.AX += (this.AW - this.D[1].AX) / 10;
-    if (this.AW) {
+    this.Q.AX += (this.up - this.D[1].AX) / 10;
+    if (this.up) {
         this.At += this.Q.Bq / 5;
     }
-    this.Q.AR = this.AI.AR = this.AR;
+    this.Q.down = this.AI.down = this.down;
     var As = this.left - this.right;
     this.AM.A3(As * 5 * this.O, 5);
     this.AU.A3(-As * 5 * this.O, 5);
     this.AQ.rotate(As / 6);
-    if (!As && this.AW) {
+    if (!As && this.up) {
         this.AM.A3(-7, 5);
         this.AU.A3(7, 5);
     }
 };
 Cb.prototype.draw = function () {
-    var Q = this.Q.place.o();
-    var AI = this.AI.place.o();
+    var Q = this.Q.place.normalizeToWorld();
+    var AI = this.AI.place.normalizeToWorld();
     graphics.beginPath();
     graphics.strokeStyle = "rgba(0, 0, 0, 0.5)";
-    graphics.lineWidth = 3.5 * C.H;
-    graphics.arc(Q.x, Q.y, 10 * C.H, 0, 2 * Math.PI, true);
-    graphics.moveTo(AI.x + 10 * C.H, AI.y);
-    graphics.arc(AI.x, AI.y, 10 * C.H, 0, 2 * Math.PI, true);
+    graphics.lineWidth = 3.5 * theTrack.zoomFactor;
+    graphics.arc(Q.x, Q.y, 10 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
+    graphics.moveTo(AI.x + 10 * theTrack.zoomFactor, AI.y);
+    graphics.arc(AI.x, AI.y, 10 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.stroke();
     var length = AI.cloneSub(Q);
     var AC = new Location((AI.y - Q.y) * this.O, (Q.x - AI.x) * this.O);
@@ -614,14 +614,14 @@ Cb.prototype.draw = function () {
     var Cf = Q.cloneAdd(length.cloneScale(0.84)).cloneAdd(AC.cloneScale(0.37));
     var BG = Q.cloneAdd(length.cloneScale(0.4)).cloneAdd(AC.cloneScale(0.05));
     graphics.beginPath();
-    graphics.lineWidth = 3 * C.H;
+    graphics.lineWidth = 3 * theTrack.zoomFactor;
     graphics.moveTo(Q.x, Q.y);
     graphics.lineTo(A$.x, A$.y);
     graphics.lineTo(Ca.x, Ca.y);
     graphics.moveTo(Cf.x, Cf.y);
     graphics.lineTo(BG.x, BG.y);
     graphics.lineTo(Q.x, Q.y);
-    var CY = new Location(6 * C.H * Math.cos(this.At), 6 * C.H * Math.sin(this.At));
+    var CY = new Location(6 * theTrack.zoomFactor * Math.cos(this.At), 6 * theTrack.zoomFactor * Math.sin(this.At));
     var BV = BG.cloneAdd(CY);
     var BW = BG.cloneSub(CY);
     graphics.moveTo(BV.x, BV.y);
@@ -646,19 +646,19 @@ Cb.prototype.draw = function () {
     graphics.lineTo(Ck.x, Ck.y);
     graphics.lineTo(BL.x, BL.y);
     graphics.stroke();
-    var h = this.h.place.o();
+    var h = this.h.place.normalizeToWorld();
     AC = h.cloneSub(Q.cloneAdd(length.cloneScale(0.5)));
     var An = A$.cloneAdd(length.cloneScale(-0.1)).cloneAdd(AC.cloneScale(0.3));
     var Ar = BV.cloneSub(An);
     var BA = new Location(Ar.y * this.O, -Ar.x * this.O);
-    BA = BA.cloneScale(C.H * C.H);
+    BA = BA.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var Cn = An.cloneAdd(Ar.cloneScale(0.5)).cloneAdd(BA.cloneScale(200 / Ar.lengthSquared()));
     Ar = BW.cloneSub(An);
     BA = new Location(Ar.y * this.O, -Ar.x * this.O);
-    BA = BA.cloneScale(C.H * C.H);
+    BA = BA.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var Co = An.cloneAdd(Ar.cloneScale(0.5)).cloneAdd(BA.cloneScale(200 / Ar.lengthSquared()));
     graphics.beginPath();
-    graphics.lineWidth = 6 * C.H;
+    graphics.lineWidth = 6 * theTrack.zoomFactor;
     graphics.strokeStyle = "rgba(0, 0, 0, 0.25)";
     graphics.moveTo(BW.x, BW.y);
     graphics.lineTo(Co.x, Co.y);
@@ -666,14 +666,14 @@ Cb.prototype.draw = function () {
     graphics.stroke();
     graphics.beginPath();
     graphics.strokeStyle = "rgba(0, 0, 0, 0.5)";
-    graphics.lineWidth = 6 * C.H;
+    graphics.lineWidth = 6 * theTrack.zoomFactor;
     graphics.moveTo(BV.x, BV.y);
     graphics.lineTo(Cn.x, Cn.y);
     graphics.lineTo(An.x, An.y);
     graphics.stroke();
     var BY = A$.cloneAdd(length.cloneScale(0.05)).cloneAdd(AC.cloneScale(0.9));
     graphics.beginPath();
-    graphics.lineWidth = 8 * C.H;
+    graphics.lineWidth = 8 * theTrack.zoomFactor;
     graphics.moveTo(An.x, An.y);
     graphics.lineTo(BY.x, BY.y);
     graphics.stroke();
@@ -681,18 +681,18 @@ Cb.prototype.draw = function () {
     var Ch = A$.cloneAdd(length.cloneScale(0.4)).cloneAdd(AC.cloneScale(1.1));
     var Cd = A$.cloneAdd(length.cloneScale(0.05)).cloneAdd(AC.cloneScale(1.05));
     graphics.beginPath();
-    graphics.lineWidth = 2 * C.H;
-    graphics.moveTo(Bs.x + 5 * C.H, Bs.y);
-    graphics.arc(Bs.x, Bs.y, 5 * C.H, 0, 2 * Math.PI, true);
+    graphics.lineWidth = 2 * theTrack.zoomFactor;
+    graphics.moveTo(Bs.x + 5 * theTrack.zoomFactor, Bs.y);
+    graphics.arc(Bs.x, Bs.y, 5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.moveTo(Ch.x, Ch.y);
     graphics.lineTo(Cd.x, Cd.y);
     graphics.stroke();
     length = BY.cloneSub(BL);
     AC = new Location(length.y * this.O, -length.x * this.O);
-    AC = AC.cloneScale(C.H * C.H);
+    AC = AC.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var CV = BL.cloneAdd(length.cloneScale(0.4)).cloneAdd(AC.cloneScale(130 / length.lengthSquared()));
     graphics.beginPath();
-    graphics.lineWidth = 5 * C.H;
+    graphics.lineWidth = 5 * theTrack.zoomFactor;
     graphics.moveTo(BY.x, BY.y);
     graphics.lineTo(CV.x, CV.y);
     graphics.lineTo(BL.x, BL.y);
@@ -710,10 +710,10 @@ Cb.prototype.AO = function () {
         this.right = this.right ? 0 : 1;
     }
     if (this.AT[2][AP.z]) {
-        this.AW = this.AW ? 0 : 1;
+        this.up = this.up ? 0 : 1;
     }
     if (this.AT[3][AP.z]) {
-        this.AR = this.AR ? 0 : 1;
+        this.down = this.down ? 0 : 1;
     }
     if (this.AT[4][AP.z]) {
         this.Aq();
@@ -741,17 +741,17 @@ Cb.prototype.AO = function () {
 
 function Bn() {
     this.D = new Array;
-    this.D.push(new Ah(new Location(b[b.length - 1][0], b[b.length - 1][1]), this));
-    this.D[0]._ = new Location(b[b.length - 1][2], b[b.length - 1][3]);
-    this.D[0].g = new Location(b[b.length - 1][4], b[b.length - 1][5]);
-    this.D.push(new Ba(new Location(b[b.length - 1][6], b[b.length - 1][7]), this));
-    this.D[1]._ = new Location(b[b.length - 1][8], b[b.length - 1][9]);
-    this.D[1].g = new Location(b[b.length - 1][10], b[b.length - 1][11]);
-    this.D[1].AX = b[b.length - 1][12];
-    this.D.push(new Ba(new Location(b[b.length - 1][13], b[b.length - 1][14]), this));
-    this.D[2]._ = new Location(b[b.length - 1][15], b[b.length - 1][16]);
-    this.D[2].g = new Location(b[b.length - 1][17], b[b.length - 1][18]);
-    this.D[2].AX = b[b.length - 1][19];
+    this.D.push(new Ah(new Location(mtbConstants[mtbConstants.length - 1][0], mtbConstants[mtbConstants.length - 1][1]), this));
+    this.D[0]._ = new Location(mtbConstants[mtbConstants.length - 1][2], mtbConstants[mtbConstants.length - 1][3]);
+    this.D[0].g = new Location(mtbConstants[mtbConstants.length - 1][4], mtbConstants[mtbConstants.length - 1][5]);
+    this.D.push(new Ba(new Location(mtbConstants[mtbConstants.length - 1][6], mtbConstants[mtbConstants.length - 1][7]), this));
+    this.D[1]._ = new Location(mtbConstants[mtbConstants.length - 1][8], mtbConstants[mtbConstants.length - 1][9]);
+    this.D[1].g = new Location(mtbConstants[mtbConstants.length - 1][10], mtbConstants[mtbConstants.length - 1][11]);
+    this.D[1].AX = mtbConstants[mtbConstants.length - 1][12];
+    this.D.push(new Ba(new Location(mtbConstants[mtbConstants.length - 1][13], mtbConstants[mtbConstants.length - 1][14]), this));
+    this.D[2]._ = new Location(mtbConstants[mtbConstants.length - 1][15], mtbConstants[mtbConstants.length - 1][16]);
+    this.D[2].g = new Location(mtbConstants[mtbConstants.length - 1][17], mtbConstants[mtbConstants.length - 1][18]);
+    this.D[2].AX = mtbConstants[mtbConstants.length - 1][19];
     this.h = this.D[0];
     this.h.Al = 14;
     this.h.drive = function () {
@@ -767,39 +767,39 @@ function Bn() {
     this.S.push(new Ac(this.D[2], this.D[0], this));
     this.AM = this.S[0];
     this.AM.A1 = 47;
-    this.AM.AB = b[b.length - 1][20];
+    this.AM.AB = mtbConstants[mtbConstants.length - 1][20];
     this.AM.BC = 0.2;
     this.AM.BE = 0.3;
     this.AQ = this.S[1];
     this.AQ.A1 = 45;
-    this.AQ.AB = b[b.length - 1][21];
+    this.AQ.AB = mtbConstants[mtbConstants.length - 1][21];
     this.AQ.BC = 0.2;
     this.AQ.BE = 0.3;
     this.AU = this.S[2];
     this.AU.A1 = 45;
-    this.AU.AB = b[b.length - 1][22];
+    this.AU.AB = mtbConstants[mtbConstants.length - 1][22];
     this.AU.BC = 0.2;
     this.AU.BE = 0.3;
     this.save = false;
     this.A9 = false;
     this.At = 0;
-    this.O = b[b.length - 1][23];
-    this.Af = new Location(b[b.length - 1][24], b[b.length - 1][25]);
-    this.A8 = b[b.length - 1][26];
-    C.Be = b[b.length - 1][27];
-    for (var j = 0; j < C.AD.length; j++) {
-        C.AD[j].BM = b[b.length - 1][28][j];
+    this.O = mtbConstants[mtbConstants.length - 1][23];
+    this.Af = new Location(mtbConstants[mtbConstants.length - 1][24], mtbConstants[mtbConstants.length - 1][25]);
+    this.A8 = mtbConstants[mtbConstants.length - 1][26];
+    theTrack.targetsReached = mtbConstants[mtbConstants.length - 1][27];
+    for (var j = 0; j < theTrack.objects.length; j++) {
+        theTrack.objects[j].BM = mtbConstants[mtbConstants.length - 1][28][j];
     }
     this.Bj = 0;
     this.Bm = 0;
     this.Br = 0;
     this.Bo = 0;
-    this.z = b[b.length - 1][29];
+    this.z = mtbConstants[mtbConstants.length - 1][29];
     if (this.z) {
-        this.Bj = b[b.length - 1][30];
-        this.Bm = b[b.length - 1][31];
-        this.Br = b[b.length - 1][32];
-        this.Bo = b[b.length - 1][33];
+        this.Bj = mtbConstants[mtbConstants.length - 1][30];
+        this.Bm = mtbConstants[mtbConstants.length - 1][31];
+        this.Br = mtbConstants[mtbConstants.length - 1][32];
+        this.Bo = mtbConstants[mtbConstants.length - 1][33];
         for (var BD = 0; BD < AZ.length; BD++) {
             for (var BJ in AZ[BD]) {
                 if (BJ >= this.z) {
@@ -821,8 +821,8 @@ Bn.prototype.Aq = function () {
 };
 Bn.prototype.DC = function () {
     this.save = false;
-    if (C.BU && C.Be == C.BU) {
-        if (this.z > 5000 && (!C.z || this.z < C.z) && (AZ[0].length || AZ[1].length) && C.ID != undefined) {
+    if (theTrack.numTargets && theTrack.targetsReached == theTrack.numTargets) {
+        if (this.z > 5000 && (!theTrack.z || this.z < theTrack.z) && (AZ[0].length || AZ[1].length) && theTrack.ID != undefined) {
             var Ao = document.cookie.indexOf("; ID=");
             if (Ao == -1 && !document.cookie.indexOf("ID=")) {
                 Ao = -2;
@@ -848,20 +848,20 @@ Bn.prototype.DC = function () {
                     request.open("POST", "js/save.php", false);
                     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                     request.setRequestHeader("User-Agent", "CanvasRider");
-                    request.send("trackID=" + C.ID + "&playerID=" + ID + "&vehicle=" + B3 + "&time=" + this.z + "&controls=" + AT);
+                    request.send("trackID=" + theTrack.ID + "&playerID=" + ID + "&vehicle=" + currentBike + "&time=" + this.z + "&controls=" + AT);
                 }
             } else {
                 alert("You just set a new track record!\nRegister & log in to save your run next time!");
             }
-            left = right = AW = AR = 0;
+            left = right = up = down = 0;
         }
     } else {
-        b.push(new Array(this.D[0].place.x, this.D[0].place.y, this.D[0]._.x, this.D[0]._.y, this.D[0].g.x, this.D[0].g.y, this.D[1].place.x, this.D[1].place.y, this.D[1]._.x, this.D[1]._.y, this.D[1].g.x, this.D[1].g.y, this.D[1].AX, this.D[2].place.x, this.D[2].place.y, this.D[2]._.x, this.D[2]._.y, this.D[2].g.x, this.D[2].g.y, this.D[2].AX, this.S[0].AB, this.S[1].AB, this.S[2].AB, this.O, this.Af.x, this.Af.y, this.A8, C.Be, new Array, this.z, this.Bj, this.Bm, this.Br, this.Bo));
-        for (var j = 0; j < C.AD.length; j++) {
-            b[b.length - 1][28].push(C.AD[j].BM);
+        mtbConstants.push(new Array(this.D[0].place.x, this.D[0].place.y, this.D[0]._.x, this.D[0]._.y, this.D[0].g.x, this.D[0].g.y, this.D[1].place.x, this.D[1].place.y, this.D[1]._.x, this.D[1]._.y, this.D[1].g.x, this.D[1].g.y, this.D[1].AX, this.D[2].place.x, this.D[2].place.y, this.D[2]._.x, this.D[2]._.y, this.D[2].g.x, this.D[2].g.y, this.D[2].AX, this.S[0].AB, this.S[1].AB, this.S[2].AB, this.O, this.Af.x, this.Af.y, this.A8, theTrack.targetsReached, new Array, this.z, this.Bj, this.Bm, this.Br, this.Bo));
+        for (var j = 0; j < theTrack.objects.length; j++) {
+            mtbConstants[mtbConstants.length - 1][28].push(theTrack.objects[j].BM);
         }
         if (W) {
-            K.push(new Array(W.D[0].place.x, W.D[0].place.y, W.D[0]._.x, W.D[0]._.y, W.D[0].g.x, W.D[0].g.y, W.D[1].place.x, W.D[1].place.y, W.D[1]._.x, W.D[1]._.y, W.D[1].g.x, W.D[1].g.y, W.D[1].AX, W.D[2].place.x, W.D[2].place.y, W.D[2]._.x, W.D[2]._.y, W.D[2].g.x, W.D[2].g.y, W.D[2].AX, W.S[0].AB, W.S[1].AB, W.S[2].AB, W.O, W.Af.x, W.Af.y, W.A8, W.left, W.right, W.AW, W.AR));
+            K.push(new Array(W.D[0].place.x, W.D[0].place.y, W.D[0]._.x, W.D[0]._.y, W.D[0].g.x, W.D[0].g.y, W.D[1].place.x, W.D[1].place.y, W.D[1]._.x, W.D[1]._.y, W.D[1].g.x, W.D[1].g.y, W.D[1].AX, W.D[2].place.x, W.D[2].place.y, W.D[2]._.x, W.D[2]._.y, W.D[2].g.x, W.D[2].g.y, W.D[2].AX, W.S[0].AB, W.S[1].AB, W.S[2].AB, W.O, W.Af.x, W.Af.y, W.A8, W.left, W.right, W.up, W.down));
         }
     }
 };
@@ -869,43 +869,43 @@ Bn.prototype.BS = function () {
     if (Aq) {
         this.Aq();
     }
-    this.Q.AX += (AW - this.D[1].AX) / 10;
-    if (AW) {
+    this.Q.AX += (up - this.D[1].AX) / 10;
+    if (up) {
         this.At += this.Q.Bq / 5;
     }
-    this.Q.AR = this.AI.AR = AR;
+    this.Q.down = this.AI.down = down;
     var As = left - right;
     this.AM.A3(As * 5 * this.O, 5);
     this.AU.A3(-As * 5 * this.O, 5);
     this.AQ.rotate(As / 8);
-    if (!As && AW) {
+    if (!As && up) {
         this.AM.A3(-7, 5);
         this.AU.A3(7, 5);
     }
 };
 Bn.prototype.draw = function () {
-    var M = this.Q.place.o();
-    var AA = this.AI.place.o();
-    var AS = this.h.place.o();
+    var M = this.Q.place.normalizeToWorld();
+    var AA = this.AI.place.normalizeToWorld();
+    var AS = this.h.place.normalizeToWorld();
     var L = AA.cloneSub(M);
     var N = new Location((AA.y - M.y) * this.O, (M.x - AA.x) * this.O);
     var R = AS.cloneSub(M.cloneAdd(L.cloneScale(0.5)));
     graphics.beginPath();
     graphics.strokeStyle = "black";
-    graphics.lineWidth = 3.5 * C.H;
-    graphics.arc(M.x, M.y, 12.5 * C.H, 0, 2 * Math.PI, true);
-    graphics.moveTo(AA.x + 12.5 * C.H, AA.y);
-    graphics.arc(AA.x, AA.y, 12.5 * C.H, 0, 2 * Math.PI, true);
+    graphics.lineWidth = 3.5 * theTrack.zoomFactor;
+    graphics.arc(M.x, M.y, 12.5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
+    graphics.moveTo(AA.x + 12.5 * theTrack.zoomFactor, AA.y);
+    graphics.arc(AA.x, AA.y, 12.5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.stroke();
     graphics.beginPath();
     graphics.fillStyle = "grey";
-    graphics.moveTo(M.x + 5 * C.H, M.y);
-    graphics.arc(M.x, M.y, 5 * C.H, 0, 2 * Math.PI, true);
-    graphics.moveTo(AA.x + 4 * C.H, AA.y);
-    graphics.arc(AA.x, AA.y, 4 * C.H, 0, 2 * Math.PI, true);
+    graphics.moveTo(M.x + 5 * theTrack.zoomFactor, M.y);
+    graphics.arc(M.x, M.y, 5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
+    graphics.moveTo(AA.x + 4 * theTrack.zoomFactor, AA.y);
+    graphics.arc(AA.x, AA.y, 4 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.fill();
     graphics.beginPath();
-    graphics.lineWidth = 5 * C.H;
+    graphics.lineWidth = 5 * theTrack.zoomFactor;
     graphics.moveTo(M.x, M.y);
     graphics.lineTo(M.x + L.x * 0.4 + N.x * 0.05, M.y + L.y * 0.4 + N.y * 0.05);
     graphics.moveTo(M.x + L.x * 0.72 + R.x * 0.64, M.y + L.y * 0.72 + R.y * 0.64);
@@ -913,7 +913,7 @@ Bn.prototype.draw = function () {
     graphics.lineTo(M.x + L.x * 0.4 + N.x * 0.05, M.y + L.y * 0.4 + N.y * 0.05);
     graphics.stroke();
     graphics.beginPath();
-    graphics.lineWidth = 2 * C.H;
+    graphics.lineWidth = 2 * theTrack.zoomFactor;
     graphics.moveTo(M.x + L.x * 0.72 + R.x * 0.64, M.y + L.y * 0.72 + R.y * 0.64);
     graphics.lineTo(M.x + L.x * 0.43 + N.x * 0.05, M.y + L.y * 0.43 + N.y * 0.05);
     graphics.moveTo(M.x + L.x * 0.45 + R.x * 0.3, M.y + L.y * 0.45 + R.y * 0.3);
@@ -921,17 +921,17 @@ Bn.prototype.draw = function () {
     graphics.lineTo(M.x + L.x * 0.25 + R.x * 0.6, M.y + L.y * 0.25 + R.y * 0.6);
     graphics.moveTo(M.x + L.x * 0.17 + R.x * 0.6, M.y + L.y * 0.17 + R.y * 0.6);
     graphics.lineTo(M.x + L.x * 0.3 + R.x * 0.6, M.y + L.y * 0.3 + R.y * 0.6);
-    var Ap = new Location(6 * Math.cos(this.At) * C.H, 6 * Math.sin(this.At) * C.H);
+    var Ap = new Location(6 * Math.cos(this.At) * theTrack.zoomFactor, 6 * Math.sin(this.At) * theTrack.zoomFactor);
     graphics.moveTo(M.x + L.x * 0.43 + N.x * 0.05 + Ap.x, M.y + L.y * 0.43 + N.y * 0.05 + Ap.y);
     graphics.lineTo(M.x + L.x * 0.43 + N.x * 0.05 - Ap.x, M.y + L.y * 0.43 + N.y * 0.05 - Ap.y);
     graphics.stroke();
     graphics.beginPath();
-    graphics.lineWidth = C.H;
+    graphics.lineWidth = theTrack.zoomFactor;
     graphics.moveTo(M.x + L.x * 0.46 + R.x * 0.4, M.y + L.y * 0.46 + R.y * 0.4);
     graphics.lineTo(M.x + L.x * 0.28 + R.x * 0.5, M.y + L.y * 0.28 + R.y * 0.5);
     graphics.stroke();
     graphics.beginPath();
-    graphics.lineWidth = 3 * C.H;
+    graphics.lineWidth = 3 * theTrack.zoomFactor;
     graphics.moveTo(AA.x, AA.y);
     graphics.lineTo(M.x + L.x * 0.71 + R.x * 0.73, M.y + L.y * 0.71 + R.y * 0.73);
     graphics.lineTo(M.x + L.x * 0.73 + R.x * 0.77, M.y + L.y * 0.73 + R.y * 0.77);
@@ -949,14 +949,14 @@ Bn.prototype.draw = function () {
     var AY = Aw.cloneAdd(L.cloneScale(-0.05)).cloneAdd(N.cloneScale(0.42));
     var Aa = Bp.cloneSub(AY);
     R = new Location(Aa.y * this.O, -Aa.x * this.O);
-    R = R.cloneScale(C.H * C.H);
+    R = R.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var CZ = AY.cloneAdd(Aa.cloneScale(0.5)).cloneAdd(R.cloneScale(200 / Aa.lengthSquared()));
     Aa = A6.cloneSub(AY);
     R = new Location(Aa.y * this.O, -Aa.x * this.O);
-    R = R.cloneScale(C.H * C.H);
+    R = R.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var CX = AY.cloneAdd(Aa.cloneScale(0.5)).cloneAdd(R.cloneScale(200 / Aa.lengthSquared()));
     graphics.beginPath();
-    graphics.lineWidth = 6 * C.H;
+    graphics.lineWidth = 6 * theTrack.zoomFactor;
     graphics.strokeStyle = "rgba(0, 0, 0, 0.5)";
     graphics.moveTo(A6.x, A6.y);
     graphics.lineTo(CX.x, CX.y);
@@ -970,7 +970,7 @@ Bn.prototype.draw = function () {
     graphics.stroke();
     var BX = Aw.cloneAdd(L.cloneScale(0.1)).cloneAdd(N.cloneScale(0.95));
     graphics.beginPath();
-    graphics.lineWidth = 8 * C.H;
+    graphics.lineWidth = 8 * theTrack.zoomFactor;
     graphics.moveTo(AY.x, AY.y);
     graphics.lineTo(BX.x, BX.y);
     graphics.stroke();
@@ -978,18 +978,18 @@ Bn.prototype.draw = function () {
     var CT = Aw.cloneAdd(L.cloneScale(0.4)).cloneAdd(N.cloneScale(1.15));
     var Ce = Aw.cloneAdd(L.cloneScale(0.1)).cloneAdd(N.cloneScale(1.05));
     graphics.beginPath();
-    graphics.lineWidth = 2 * C.H;
-    graphics.moveTo(Bl.x + 5 * C.H, Bl.y);
-    graphics.arc(Bl.x, Bl.y, 5 * C.H, 0, 2 * Math.PI, true);
+    graphics.lineWidth = 2 * theTrack.zoomFactor;
+    graphics.moveTo(Bl.x + 5 * theTrack.zoomFactor, Bl.y);
+    graphics.arc(Bl.x, Bl.y, 5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.moveTo(CT.x, CT.y);
     graphics.lineTo(Ce.x, Ce.y);
     graphics.stroke();
     L = BX.cloneSub(A7);
     N = new Location(L.y * this.O, -L.x * this.O);
-    N = N.cloneScale(C.H * C.H);
+    N = N.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var CU = A7.cloneAdd(L.cloneScale(0.3)).cloneAdd(N.cloneScale(80 / L.lengthSquared()));
     graphics.beginPath();
-    graphics.lineWidth = 5 * C.H;
+    graphics.lineWidth = 5 * theTrack.zoomFactor;
     graphics.moveTo(BX.x, BX.y);
     graphics.lineTo(CU.x, CU.y);
     graphics.lineTo(A7.x, A7.y);
@@ -1021,8 +1021,8 @@ Bn.prototype.DB = function () {
     this.A9 = true;
     this.h.drive = function () {};
     this.Q.AX = 0;
-    this.Q.AR = false;
-    this.AI.AR = false;
+    this.Q.down = false;
+    this.AI.down = false;
     this.h.Ad = false;
     AP = new Cp(this, this.C1());
 };
@@ -1038,13 +1038,13 @@ Bn.prototype.AO = function () {
         AZ[1][this.z] = 1;
         this.Bm = right;
     }
-    if (AW != this.Br) {
+    if (up != this.Br) {
         AZ[2][this.z] = 1;
-        this.Br = AW;
+        this.Br = up;
     }
-    if (AR != this.Bo) {
+    if (down != this.Bo) {
         AZ[3][this.z] = 1;
-        this.Bo = AR;
+        this.Bo = down;
     }
     if (Aq) {
         AZ[4][this.z] = 1;
@@ -1120,8 +1120,8 @@ function CW(AT) {
     this.A8 = K[K.length - 1][26];
     this.left = K[K.length - 1][27];
     this.right = K[K.length - 1][28];
-    this.AW = K[K.length - 1][29];
-    this.AR = K[K.length - 1][30];
+    this.up = K[K.length - 1][29];
+    this.down = K[K.length - 1][30];
     this.AT = AT;
     this.z = this.AT[5];
 }
@@ -1133,43 +1133,43 @@ CW.prototype.Aq = function () {
     this.AU.AB = AM;
 };
 CW.prototype.BS = function () {
-    this.Q.AX += (this.AW - this.D[1].AX) / 10;
-    if (this.AW) {
+    this.Q.AX += (this.up - this.D[1].AX) / 10;
+    if (this.up) {
         this.At += this.Q.Bq / 5;
     }
-    this.Q.AR = this.AI.AR = this.AR;
+    this.Q.down = this.AI.down = this.down;
     var As = this.left - this.right;
     this.AM.A3(As * 5 * this.O, 5);
     this.AU.A3(-As * 5 * this.O, 5);
     this.AQ.rotate(As / 8);
-    if (!As && this.AW) {
+    if (!As && this.up) {
         this.AM.A3(-7, 5);
         this.AU.A3(7, 5);
     }
 };
 CW.prototype.draw = function () {
-    var M = this.Q.place.o();
-    var AA = this.AI.place.o();
-    var AS = this.h.place.o();
+    var M = this.Q.place.normalizeToWorld();
+    var AA = this.AI.place.normalizeToWorld();
+    var AS = this.h.place.normalizeToWorld();
     var L = AA.cloneSub(M);
     var N = new Location((AA.y - M.y) * this.O, (M.x - AA.x) * this.O);
     var R = AS.cloneSub(M.cloneAdd(L.cloneScale(0.5)));
     graphics.beginPath();
     graphics.strokeStyle = "rgba(0, 0, 0, 0.5)";
-    graphics.lineWidth = 3.5 * C.H;
-    graphics.arc(M.x, M.y, 12.5 * C.H, 0, 2 * Math.PI, true);
-    graphics.moveTo(AA.x + 12.5 * C.H, AA.y);
-    graphics.arc(AA.x, AA.y, 12.5 * C.H, 0, 2 * Math.PI, true);
+    graphics.lineWidth = 3.5 * theTrack.zoomFactor;
+    graphics.arc(M.x, M.y, 12.5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
+    graphics.moveTo(AA.x + 12.5 * theTrack.zoomFactor, AA.y);
+    graphics.arc(AA.x, AA.y, 12.5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.stroke();
     graphics.beginPath();
     graphics.fillStyle = "rgba(0, 0, 0, 0.25)";
-    graphics.moveTo(M.x + 5 * C.H, M.y);
-    graphics.arc(M.x, M.y, 5 * C.H, 0, 2 * Math.PI, true);
-    graphics.moveTo(AA.x + 4 * C.H, AA.y);
-    graphics.arc(AA.x, AA.y, 4 * C.H, 0, 2 * Math.PI, true);
+    graphics.moveTo(M.x + 5 * theTrack.zoomFactor, M.y);
+    graphics.arc(M.x, M.y, 5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
+    graphics.moveTo(AA.x + 4 * theTrack.zoomFactor, AA.y);
+    graphics.arc(AA.x, AA.y, 4 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.fill();
     graphics.beginPath();
-    graphics.lineWidth = 5 * C.H;
+    graphics.lineWidth = 5 * theTrack.zoomFactor;
     graphics.moveTo(M.x, M.y);
     graphics.lineTo(M.x + L.x * 0.4 + N.x * 0.05, M.y + L.y * 0.4 + N.y * 0.05);
     graphics.moveTo(M.x + L.x * 0.72 + R.x * 0.64, M.y + L.y * 0.72 + R.y * 0.64);
@@ -1177,7 +1177,7 @@ CW.prototype.draw = function () {
     graphics.lineTo(M.x + L.x * 0.4 + N.x * 0.05, M.y + L.y * 0.4 + N.y * 0.05);
     graphics.stroke();
     graphics.beginPath();
-    graphics.lineWidth = 2 * C.H;
+    graphics.lineWidth = 2 * theTrack.zoomFactor;
     graphics.moveTo(M.x + L.x * 0.72 + R.x * 0.64, M.y + L.y * 0.72 + R.y * 0.64);
     graphics.lineTo(M.x + L.x * 0.43 + N.x * 0.05, M.y + L.y * 0.43 + N.y * 0.05);
     graphics.moveTo(M.x + L.x * 0.45 + R.x * 0.3, M.y + L.y * 0.45 + R.y * 0.3);
@@ -1185,17 +1185,17 @@ CW.prototype.draw = function () {
     graphics.lineTo(M.x + L.x * 0.25 + R.x * 0.6, M.y + L.y * 0.25 + R.y * 0.6);
     graphics.moveTo(M.x + L.x * 0.17 + R.x * 0.6, M.y + L.y * 0.17 + R.y * 0.6);
     graphics.lineTo(M.x + L.x * 0.3 + R.x * 0.6, M.y + L.y * 0.3 + R.y * 0.6);
-    var Ap = new Location(6 * Math.cos(this.At) * C.H, 6 * Math.sin(this.At) * C.H);
+    var Ap = new Location(6 * Math.cos(this.At) * theTrack.zoomFactor, 6 * Math.sin(this.At) * theTrack.zoomFactor);
     graphics.moveTo(M.x + L.x * 0.43 + N.x * 0.05 + Ap.x, M.y + L.y * 0.43 + N.y * 0.05 + Ap.y);
     graphics.lineTo(M.x + L.x * 0.43 + N.x * 0.05 - Ap.x, M.y + L.y * 0.43 + N.y * 0.05 - Ap.y);
     graphics.stroke();
     graphics.beginPath();
-    graphics.lineWidth = C.H;
+    graphics.lineWidth = theTrack.zoomFactor;
     graphics.moveTo(M.x + L.x * 0.46 + R.x * 0.4, M.y + L.y * 0.46 + R.y * 0.4);
     graphics.lineTo(M.x + L.x * 0.28 + R.x * 0.5, M.y + L.y * 0.28 + R.y * 0.5);
     graphics.stroke();
     graphics.beginPath();
-    graphics.lineWidth = 3 * C.H;
+    graphics.lineWidth = 3 * theTrack.zoomFactor;
     graphics.moveTo(AA.x, AA.y);
     graphics.lineTo(M.x + L.x * 0.71 + R.x * 0.73, M.y + L.y * 0.71 + R.y * 0.73);
     graphics.lineTo(M.x + L.x * 0.73 + R.x * 0.77, M.y + L.y * 0.73 + R.y * 0.77);
@@ -1210,14 +1210,14 @@ CW.prototype.draw = function () {
     var AY = Aw.cloneAdd(L.cloneScale(-0.05)).cloneAdd(N.cloneScale(0.42));
     var Aa = Bp.cloneSub(AY);
     R = new Location(Aa.y * this.O, -Aa.x * this.O);
-    R = R.cloneScale(C.H * C.H);
+    R = R.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var CZ = AY.cloneAdd(Aa.cloneScale(0.5)).cloneAdd(R.cloneScale(200 / Aa.lengthSquared()));
     Aa = A6.cloneSub(AY);
     R = new Location(Aa.y * this.O, -Aa.x * this.O);
-    R = R.cloneScale(C.H * C.H);
+    R = R.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var CX = AY.cloneAdd(Aa.cloneScale(0.5)).cloneAdd(R.cloneScale(200 / Aa.lengthSquared()));
     graphics.beginPath();
-    graphics.lineWidth = 6 * C.H;
+    graphics.lineWidth = 6 * theTrack.zoomFactor;
     graphics.strokeStyle = "rgba(0, 0, 0, 0.25)";
     graphics.moveTo(A6.x, A6.y);
     graphics.lineTo(CX.x, CX.y);
@@ -1231,7 +1231,7 @@ CW.prototype.draw = function () {
     graphics.stroke();
     var BX = Aw.cloneAdd(L.cloneScale(0.1)).cloneAdd(N.cloneScale(0.95));
     graphics.beginPath();
-    graphics.lineWidth = 8 * C.H;
+    graphics.lineWidth = 8 * theTrack.zoomFactor;
     graphics.moveTo(AY.x, AY.y);
     graphics.lineTo(BX.x, BX.y);
     graphics.stroke();
@@ -1239,18 +1239,18 @@ CW.prototype.draw = function () {
     var CT = Aw.cloneAdd(L.cloneScale(0.4)).cloneAdd(N.cloneScale(1.15));
     var Ce = Aw.cloneAdd(L.cloneScale(0.1)).cloneAdd(N.cloneScale(1.05));
     graphics.beginPath();
-    graphics.lineWidth = 2 * C.H;
-    graphics.moveTo(Bl.x + 5 * C.H, Bl.y);
-    graphics.arc(Bl.x, Bl.y, 5 * C.H, 0, 2 * Math.PI, true);
+    graphics.lineWidth = 2 * theTrack.zoomFactor;
+    graphics.moveTo(Bl.x + 5 * theTrack.zoomFactor, Bl.y);
+    graphics.arc(Bl.x, Bl.y, 5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.moveTo(CT.x, CT.y);
     graphics.lineTo(Ce.x, Ce.y);
     graphics.stroke();
     L = BX.cloneSub(A7);
     N = new Location(L.y * this.O, -L.x * this.O);
-    N = N.cloneScale(C.H * C.H);
+    N = N.cloneScale(theTrack.zoomFactor * theTrack.zoomFactor);
     var CU = A7.cloneAdd(L.cloneScale(0.3)).cloneAdd(N.cloneScale(80 / L.lengthSquared()));
     graphics.beginPath();
-    graphics.lineWidth = 5 * C.H;
+    graphics.lineWidth = 5 * theTrack.zoomFactor;
     graphics.moveTo(BX.x, BX.y);
     graphics.lineTo(CU.x, CU.y);
     graphics.lineTo(A7.x, A7.y);
@@ -1268,10 +1268,10 @@ CW.prototype.AO = function () {
         this.right = this.right ? 0 : 1;
     }
     if (this.AT[2][AP.z]) {
-        this.AW = this.AW ? 0 : 1;
+        this.up = this.up ? 0 : 1;
     }
     if (this.AT[3][AP.z]) {
-        this.AR = this.AR ? 0 : 1;
+        this.down = this.down ? 0 : 1;
     }
     if (this.AT[4][AP.z]) {
         this.Aq();
@@ -1346,18 +1346,18 @@ function $(Cx) {
     }
 }
 $.prototype.draw = function () {
-    var h = this.h.place.o();
-    var Bx = this.Bx.place.o();
-    var BO = this.BO.place.o();
-    var Bu = this.Bu.place.o();
-    var B0 = this.B0.place.o();
-    var Bw = this.Bw.place.o();
-    var BQ = this.BQ.place.o();
-    var Bv = this.Bv.place.o();
-    var BN = this.BN.place.o();
-    var Ab = this.Ab.place.o();
+    var h = this.h.place.normalizeToWorld();
+    var Bx = this.Bx.place.normalizeToWorld();
+    var BO = this.BO.place.normalizeToWorld();
+    var Bu = this.Bu.place.normalizeToWorld();
+    var B0 = this.B0.place.normalizeToWorld();
+    var Bw = this.Bw.place.normalizeToWorld();
+    var BQ = this.BQ.place.normalizeToWorld();
+    var Bv = this.Bv.place.normalizeToWorld();
+    var BN = this.BN.place.normalizeToWorld();
+    var Ab = this.Ab.place.normalizeToWorld();
     graphics.beginPath();
-    graphics.lineWidth = 5 * C.H;
+    graphics.lineWidth = 5 * theTrack.zoomFactor;
     graphics.strokeStyle = "rgba(0,0,0,0.5)";
     graphics.moveTo(h.x, h.y);
     graphics.lineTo(Bu.x, Bu.y);
@@ -1376,15 +1376,15 @@ $.prototype.draw = function () {
     graphics.lineTo(BQ.x, BQ.y);
     graphics.stroke();
     graphics.beginPath();
-    graphics.lineWidth = 8 * C.H;
+    graphics.lineWidth = 8 * theTrack.zoomFactor;
     graphics.moveTo(Ab.x, Ab.y);
     graphics.lineTo(h.x, h.y);
     graphics.stroke();
     h.add(h.cloneSub(Ab).cloneScale(0.25));
     graphics.beginPath();
-    graphics.lineWidth = 2 * C.H;
-    graphics.moveTo(h.x + 5 * C.H, h.y);
-    graphics.arc(h.x, h.y, 5 * C.H, 0, 2 * Math.PI, true);
+    graphics.lineWidth = 2 * theTrack.zoomFactor;
+    graphics.moveTo(h.x + 5 * theTrack.zoomFactor, h.y);
+    graphics.arc(h.x, h.y, 5 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.stroke();
     var A6 = h.cloneSub(Ab);
     var A7 = new Location(A6.y, -A6.x);
@@ -1480,7 +1480,7 @@ function C5(G, Af, z) {
 C5.prototype.draw = function () {
     if (this.Ay > 0) {
         this.Ay -= 10;
-        var M = this.place.o();
+        var M = this.place.normalizeToWorld();
         var AS = Math.random() * 6.2;
         var L = this.Ay / 2;
         var N = M.x + L * Math.cos(AS);
@@ -1513,26 +1513,26 @@ function target(x, y) {
 target.prototype.draw = function () {
     graphics.beginPath();
     graphics.fillStyle = this.reached ? "#FFFFAA" : "#FFFF00";
-    graphics.lineWidth = 2 * C.H;
-    graphics.moveTo(this.place.o().x + 7 * C.H, this.place.o().y);
-    graphics.arc(this.place.o().x, this.place.o().y, 7 * C.H, 0, 2 * Math.PI, true);
+    graphics.lineWidth = 2 * theTrack.zoomFactor;
+    graphics.moveTo(this.place.normalizeToWorld().x + 7 * theTrack.zoomFactor, this.place.normalizeToWorld().y);
+    graphics.arc(this.place.normalizeToWorld().x, this.place.normalizeToWorld().y, 7 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.fill();
     graphics.stroke();
 };
 target.prototype.Ad = function (AV) {
     if (!this.reached && AV.place.cloneSub(this.place).lengthSquared() < 500 && !AV.parent.Cq) {
         this.reached = true;
-        C.Be++;
-        if (C.BU && C.Be == C.BU) {
+        theTrack.targetsReached++;
+        if (theTrack.numTargets && theTrack.targetsReached == theTrack.numTargets) {
             AV.parent.save = true;
         }
     }
 };
-target.prototype.Aj = function (U) {
-    if (U.cloneSub(this.place).length() < BH + 7) {
-        C.BU--;
+target.prototype.checkDelete = function (eraserLocation) {
+    if (eraserLocation.cloneSub(this.place).length() < eraserSize + 7) {
+        theTrack.numTargets--;
         this.remove = true;
-        C.remove(this.place);
+        theTrack.remove(this.place);
     }
 };
 target.prototype.asString = function () {
@@ -1546,8 +1546,8 @@ function checkpoint(x, y) {
 checkpoint.prototype.draw = function () {
     graphics.beginPath();
     graphics.fillStyle = this.reached ? "#AAAAFF" : "#0000FF";
-    graphics.moveTo(this.place.o().x + 7 * C.H, this.place.o().y);
-    graphics.arc(this.place.o().x, this.place.o().y, 7 * C.H, 0, 2 * Math.PI, true);
+    graphics.moveTo(this.place.normalizeToWorld().x + 7 * theTrack.zoomFactor, this.place.normalizeToWorld().y);
+    graphics.arc(this.place.normalizeToWorld().x, this.place.normalizeToWorld().y, 7 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.fill();
     graphics.stroke();
 };
@@ -1557,10 +1557,10 @@ checkpoint.prototype.Ad = function (AV) {
         AV.parent.save = true;
     }
 };
-checkpoint.prototype.Aj = function (U) {
-    if (U.cloneSub(this.place).length() < BH + 7) {
+checkpoint.prototype.checkDelete = function (eraserLocation) {
+    if (eraserLocation.cloneSub(this.place).length() < eraserSize + 7) {
         this.remove = true;
-        C.remove(this.place);
+        theTrack.remove(this.place);
     }
 };
 checkpoint.prototype.asString = function () {
@@ -1577,12 +1577,12 @@ boost.prototype.draw = function () {
     graphics.beginPath();
     graphics.fillStyle = "yellow";
     graphics.save();
-    graphics.translate(this.place.o().x, this.place.o().y);
+    graphics.translate(this.place.normalizeToWorld().x, this.place.normalizeToWorld().y);
     graphics.rotate(this.rotation * Math.PI / 180);
-    graphics.moveTo(-7 * C.H, -10 * C.H);
-    graphics.lineTo(0, 10 * C.H);
-    graphics.lineTo(7 * C.H, -10 * C.H);
-    graphics.lineTo(-7 * C.H, -10 * C.H);
+    graphics.moveTo(-7 * theTrack.zoomFactor, -10 * theTrack.zoomFactor);
+    graphics.lineTo(0, 10 * theTrack.zoomFactor);
+    graphics.lineTo(7 * theTrack.zoomFactor, -10 * theTrack.zoomFactor);
+    graphics.lineTo(-7 * theTrack.zoomFactor, -10 * theTrack.zoomFactor);
     graphics.fill();
     graphics.stroke();
     graphics.restore();
@@ -1594,10 +1594,10 @@ boost.prototype.Ad = function (AV) {
         }
     }
 };
-boost.prototype.Aj = function (U) {
-    if (U.cloneSub(this.place).length() < BH + 7) {
+boost.prototype.checkDelete = function (eraserLocation) {
+    if (eraserLocation.cloneSub(this.place).length() < eraserSize + 7) {
         this.remove = true;
-        C.remove(this.place);
+        theTrack.remove(this.place);
     }
 };
 boost.prototype.asString = function () {
@@ -1614,12 +1614,12 @@ gravity.prototype.draw = function () {
     graphics.beginPath();
     graphics.fillStyle = "#00FF00";
     graphics.save();
-    graphics.translate(this.place.o().x, this.place.o().y);
+    graphics.translate(this.place.normalizeToWorld().x, this.place.normalizeToWorld().y);
     graphics.rotate(this.rotation * Math.PI / 180);
-    graphics.moveTo(-7 * C.H, -10 * C.H);
-    graphics.lineTo(0, 10 * C.H);
-    graphics.lineTo(7 * C.H, -10 * C.H);
-    graphics.lineTo(-7 * C.H, -10 * C.H);
+    graphics.moveTo(-7 * theTrack.zoomFactor, -10 * theTrack.zoomFactor);
+    graphics.lineTo(0, 10 * theTrack.zoomFactor);
+    graphics.lineTo(7 * theTrack.zoomFactor, -10 * theTrack.zoomFactor);
+    graphics.lineTo(-7 * theTrack.zoomFactor, -10 * theTrack.zoomFactor);
     graphics.fill();
     graphics.stroke();
     graphics.restore();
@@ -1629,10 +1629,10 @@ gravity.prototype.Ad = function (AV) {
         AV.parent.Af.set(this.O);
     }
 };
-gravity.prototype.Aj = function (U) {
-    if (U.cloneSub(this.place).length() < BH + 7) {
+gravity.prototype.checkDelete = function (eraserLocation) {
+    if (eraserLocation.cloneSub(this.place).length() < eraserSize + 7) {
         this.remove = true;
-        C.remove(this.place);
+        theTrack.remove(this.place);
     }
 };
 gravity.prototype.asString = function () {
@@ -1644,8 +1644,8 @@ function sloMo(x, y) {
 }
 sloMo.prototype.draw = function () {
     graphics.beginPath();
-    graphics.moveTo(this.place.o().x + 7 * C.H, this.place.o().y);
-    graphics.arc(this.place.o().x, this.place.o().y, 7 * C.H, 0, 2 * Math.PI, true);
+    graphics.moveTo(this.place.normalizeToWorld().x + 7 * theTrack.zoomFactor, this.place.normalizeToWorld().y);
+    graphics.arc(this.place.normalizeToWorld().x, this.place.normalizeToWorld().y, 7 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.stroke();
 };
 sloMo.prototype.Ad = function (AV) {
@@ -1653,10 +1653,10 @@ sloMo.prototype.Ad = function (AV) {
         AV.parent.A8 = true;
     }
 };
-sloMo.prototype.Aj = function (U) {
-    if (U.cloneSub(this.place).length() < BH + 7) {
+sloMo.prototype.checkDelete = function (eraserLocation) {
+    if (eraserLocation.cloneSub(this.place).length() < eraserSize + 7) {
         this.remove = true;
-        C.remove(this.place);
+        theTrack.remove(this.place);
     }
 };
 sloMo.prototype.asString = function () {
@@ -1669,8 +1669,8 @@ function bomb(x, y) {
 bomb.prototype.draw = function () {
     graphics.beginPath();
     graphics.fillStyle = "red";
-    graphics.moveTo(this.place.o().x + 7 * C.H, this.place.o().y);
-    graphics.arc(this.place.o().x, this.place.o().y, 7 * C.H, 0, 2 * Math.PI, true);
+    graphics.moveTo(this.place.normalizeToWorld().x + 7 * theTrack.zoomFactor, this.place.normalizeToWorld().y);
+    graphics.arc(this.place.normalizeToWorld().x, this.place.normalizeToWorld().y, 7 * theTrack.zoomFactor, 0, 2 * Math.PI, true);
     graphics.fill();
     graphics.stroke();
 };
@@ -1679,10 +1679,10 @@ bomb.prototype.Ad = function (AV) {
         AP = new C5(this.place, AP.Af, AP.z);
     }
 };
-bomb.prototype.Aj = function (U) {
-    if (U.cloneSub(this.place).length() < BH + 7) {
+bomb.prototype.checkDelete = function (eraserLocation) {
+    if (eraserLocation.cloneSub(this.place).length() < eraserSize + 7) {
         this.remove = true;
-        C.remove(this.place);
+        theTrack.remove(this.place);
     }
 };
 bomb.prototype.asString = function () {
@@ -1698,8 +1698,8 @@ function line(x1, y1, x2, y2) {
 }
 line.prototype.custDraw = function (graphic, CI, CP) {
     graphic.beginPath();
-    graphic.moveTo(this.point1.x * C.H - CI, this.point1.y * C.H - CP);
-    graphic.lineTo(this.point2.x * C.H - CI, this.point2.y * C.H - CP);
+    graphic.moveTo(this.point1.x * theTrack.zoomFactor - CI, this.point1.y * theTrack.zoomFactor - CP);
+    graphic.lineTo(this.point2.x * theTrack.zoomFactor - CI, this.point2.y * theTrack.zoomFactor - CP);
     graphic.stroke();
 };
 line.prototype.Ad = function (Ah) {
@@ -1736,8 +1736,8 @@ line.prototype.Ad = function (Ah) {
         return;
     }
 };
-line.prototype.Aj = function (U) {
-    var C4 = U.cloneSub(this.point1);
+line.prototype.checkDelete = function (eraserLocation) {
+    var C4 = eraserLocation.cloneSub(this.point1);
     var B8 = C4.dotProduct(this.vector.cloneReciprocalScale(this.length));
     var Bi = new Location(0, 0);
     if (B8 <= 0) {
@@ -1747,16 +1747,16 @@ line.prototype.Aj = function (U) {
     } else {
         Bi.set(this.point1.cloneAdd(this.vector.cloneReciprocalScale(this.length).cloneScale(B8)));
     }
-    var DA = U.cloneSub(Bi);
-    if (DA.length() <= BH) {
+    var DA = eraserLocation.cloneSub(Bi);
+    if (DA.length() <= eraserSize) {
         this.remove = true;
-        C.remove(this.point1, this.point2);
+        theTrack.remove(this.point1, this.point2);
     }
 };
 line.prototype.CR = function () {
     this.B9 = true;
     var end = " " + this.point2.x.toString(32) + " " + this.point2.y.toString(32);
-    var next = C.I[Math.floor(this.point2.x / C.q)][Math.floor(this.point2.y / C.q)].search(this.point2, "line");
+    var next = theTrack.I[Math.floor(this.point2.x / theTrack.q)][Math.floor(this.point2.y / theTrack.q)].search(this.point2, "line");
     if (next != undefined) {
         end += next.CR();
     }
@@ -1772,12 +1772,12 @@ function B5(C_, C9, C8, C$) {
 }
 B5.prototype.custDraw = function (graphic, CI, CP) {
     graphic.beginPath();
-    graphic.moveTo(this.AH.x * C.H - CI, this.AH.y * C.H - CP);
-    graphic.lineTo(this.AK.x * C.H - CI, this.AK.y * C.H - CP);
+    graphic.moveTo(this.AH.x * theTrack.zoomFactor - CI, this.AH.y * theTrack.zoomFactor - CP);
+    graphic.lineTo(this.AK.x * theTrack.zoomFactor - CI, this.AK.y * theTrack.zoomFactor - CP);
     graphic.stroke();
 };
-B5.prototype.Aj = function (U) {
-    var C4 = U.cloneSub(this.AH);
+B5.prototype.checkDelete = function (eraserLocation) {
+    var C4 = eraserLocation.cloneSub(this.AH);
     var B8 = C4.dotProduct(this.BK.cloneReciprocalScale(this.length));
     var Bi = new Location(0, 0);
     if (B8 <= 0) {
@@ -1787,16 +1787,16 @@ B5.prototype.Aj = function (U) {
     } else {
         Bi.set(this.AH.cloneAdd(this.BK.cloneReciprocalScale(this.length).cloneScale(B8)));
     }
-    var DA = U.cloneSub(Bi);
-    if (DA.length() <= BH) {
+    var DA = eraserLocation.cloneSub(Bi);
+    if (DA.length() <= eraserSize) {
         this.remove = true;
-        C.remove(this.AH, this.AK);
+        theTrack.remove(this.AH, this.AK);
     }
 };
 B5.prototype.CR = function () {
     this.B9 = true;
     var end = " " + this.AK.x.toString(32) + " " + this.AK.y.toString(32);
-    var next = C.I[Math.floor(this.AK.x / C.q)][Math.floor(this.AK.y / C.q)].search(this.AK, "sline");
+    var next = theTrack.I[Math.floor(this.AK.x / theTrack.q)][Math.floor(this.AK.y / theTrack.q)].search(this.AK, "sline");
     if (next != undefined) {
         end += next.CR();
     }
@@ -1806,15 +1806,15 @@ B5.prototype.CR = function () {
 function BP() {
     this.AG = new Array;
     this.AL = new Array;
-    this.AD = new Array;
+    this.objects = new Array;
 }
 BP.prototype.Ad = function (AV) {
     for (var P = this.AG.length - 1; P >= 0; P--) {
         this.AG[P].Ad(AV);
     }
     if (!AV.parent.A9) {
-        for (var j = this.AD.length - 1; j >= 0; j--) {
-            this.AD[j].Ad(AV);
+        for (var j = this.objects.length - 1; j >= 0; j--) {
+            this.objects[j].Ad(AV);
         }
     }
 };
@@ -1836,9 +1836,9 @@ BP.prototype.remove = function () {
             v--;
         }
     }
-    for (var j = 0; j < this.AD.length; j++) {
-        if (this.AD[j].remove != undefined) {
-            this.AD.splice(j, 1);
+    for (var j = 0; j < this.objects.length; j++) {
+        if (this.objects[j].remove != undefined) {
+            this.objects.splice(j, 1);
             j--;
         }
     }
@@ -1895,11 +1895,11 @@ function CG(Av, BZ, q) {
     }
     return I;
 }
-function BI(ID) {
+function track(ID) {
     this.I = new Array;
     this.q = 100;
     this.Ax = new Array;
-    this.H = 0.6;
+    this.zoomFactor = 0.6;
     this.ID = ID;
     graphics.fillText("Loading track... Please wait.", 36, 16);
     if (this.ID == "banner") {
@@ -1910,11 +1910,11 @@ function BI(ID) {
         graphics.font = "8px eiven";
         toolbar2.style.display = "none";
         toolbar1.style.left = canvas.offsetLeft + "px";
-        this.H = 0.5;
-        this.A5 = new Location(730, -52);
+        this.zoomFactor = 0.5;
+        this.cameraCenter = new Location(730, -52);
         var rawTrack = "42 1i 5u a,8e a 8e -a 8e -u 8e -1i 92 -18 92 0 9m a aa 0 au -a au a,8e -1i 9m -26 au -1i aa -18 9m -1i 92 -18,6i a 84 a,b8 -a b8 a cg u d4 k do u do a do -a do -u cg -1i bs -18,do -u d4 -k bs -18,b8 -a bs -k bs 0 cg a d4 0 d4 -k,e2 k e2 -1i em -18,e2 -u em -k em u,fa -u fu -k gi -u fa -1i em -18,fu -k fu k fu u,gi k gi -u,fa -u em -k,6i a 5u a,gs -u gs 0 gs a i4 u jc a jc -u,gs -18 gs -u,gs -18 hg -1i hg 0 gs a,hg 0 i4 a io 0 jc a,io 0 io -1i jc -18 jc -u,jm a ku u li k m6 u m6 a,jm a jm -a ka -k ka 0 ku a li 0 li -k m6 -u m6 a,li -k ka -18 ku -1i m6 -u,mg a no u p0 a p0 -a oc -k no -u,oc -k p0 -u no -1i no -18 no -a,mg a n4 0 no a oc 0 no -a,qi a qi k r6 u r6 0 t2 u t2 a se 0 t2 -a,qi a qi -a,qi -1i qi 0,qi -1i rq -26 t2 -1i t2 -u t2 -a,r6 -18 rq -1i se -18 t2 -1i,se -18 se -k rq -a r6 -k r6 -18,qi -1i r6 -18,tc k u0 u,tc k tc 0 tc -18 u0 -1i u0 u,ua a vi u 10q a 10q -k 10q -1s 106 -26 106 -1i,ua a ua -a ua -u uu -k uu 0 vi a 106 0 106 -k 10q -u,ua -u vi -1i 106 -18 106 -1i,106 -k vi -u uu -k,114 a 12c u 130 k 11o 0 11o -a,114 a 114 -a 114 -u 12c -1i 13k -u 130 -k 130 -a 130 0 13k -a 13k -u,130 -k 12c -u 11o -k 114 -u,11o -k 11o -a,13u k 13u -u 13u -18 14i -1i 14i 0,13u k 14i u 14i 0,17m a 19i 1i 1es 1i 3d2 1i,pa a q8 a,8e a 9m u au a,e2 k em u,gi k fu u,42 1i -1mm 1i,17m a 14s a#9m -1i 9m -a aa 0,9m -a 92 0,bs 0 cg -a cg -u,cg -a d4 0,bs -k cg -u,em -k fa -a fa a fu 0,fa -a fu -k,em 0 fa a,hg 0 i4 -a io 0,hg -k i4 -u i4 -a,i4 -u io -k,ka 0 ku -a li 0,ku -a ku -u,ka -k ku -u,no -1i mg -u mg -a n4 0,mg -u no -a,no -u n4 -k,r6 -18 rq -u rq -a,rq -u se -18,tc -18 tc -1s u0 -1i,uu 0 vi -a vi -u,vi -a 106 0,11o -k 12c -a 12c a,12c -a 130 -k,130 0 12c a,14i -1i 156 -18 156 -k 14i -u##BMX#";
     } else {
-        this.A5 = new Location(0, 0);
+        this.cameraCenter = new Location(0, 0);
         if (this.ID == undefined) {
             var rawTrack = "-18 1i 18 1i##";
             toolbar2.style.display = "block";
@@ -1979,22 +1979,22 @@ function BI(ID) {
             }
         }
     }
-    this.BU = 0;
-    this.Be = 0;
-    this.AD = new Array;
-    var AD = hashSplit[2].split(",");
-    for (var j = 0; j < AD.length; j++) {
-        var AJ = AD[j].split(" ");
+    this.numTargets = 0;
+    this.targetsReached = 0;
+    this.objects = new Array;
+    var objects = hashSplit[2].split(",");
+    for (var j = 0; j < objects.length; j++) {
+        var AJ = objects[j].split(" ");
         if (AJ.length > 2) {
             switch (AJ[0]) {
             case "T":
                 var Ag = new target(parseInt(AJ[1], 32), parseInt(AJ[2], 32));
-                this.BU++;
-                this.AD.push(Ag);
+                this.numTargets++;
+                this.objects.push(Ag);
                 break;
             case "C":
                 var Ag = new checkpoint(parseInt(AJ[1], 32), parseInt(AJ[2], 32));
-                this.AD.push(Ag);
+                this.objects.push(Ag);
                 break;
             case "B":
                 var Ag = new boost(parseInt(AJ[1], 32), parseInt(AJ[2], 32), parseInt(AJ[3], 32) + 180);
@@ -2019,62 +2019,62 @@ function BI(ID) {
             if (this.I[x][y] == undefined) {
                 this.I[x][y] = new BP(x, y);
             }
-            this.I[x][y].AD.push(Ag);
+            this.I[x][y].objects.push(Ag);
         }
     }
     if (hashSplit[3] == "MTB" || hashSplit[3] == "BMX") {
-        B3 = hashSplit[3];
+        currentBike = hashSplit[3];
         this.z = hashSplit[4] != "" ? hashSplit[4] : false;
     } else {
         this.z = hashSplit[3] != "" ? hashSplit[3] : false;
     }
 }
-BI.prototype.DR = function () {
-    if (Z.length > 1) {
-        Z.pop();
+track.prototype.popCheckpoint = function () {
+    if (bmxConstants.length > 1) {
+        bmxConstants.pop();
     }
-    if (b.length > 1) {
-        b.pop();
+    if (mtbConstants.length > 1) {
+        mtbConstants.pop();
     }
     if (W && K.length > 1) {
         K.pop();
     }
 };
-BI.prototype.C2 = function () {
+track.prototype.restart = function () {
     this.DV();
-    Bb = false;
-    AP = B3 == "BMX" ? new Bk : new Bn;
+    paused = false;
+    AP = currentBike == "BMX" ? new Bk : new Bn;
     focus = AP.h;
     if (W) {
         W = this.AT[6] == "BMX" ? new Cb(this.AT) : new CW(this.AT);
-        if (K.length == 1 && !AW) {
+        if (K.length == 1 && !up) {
             focus = W.h;
         }
     }
     if (this.ID != "banner") {
-        this.A5 = new Location(AP.h.place.x, AP.h.place.y);
+        this.cameraCenter = new Location(AP.h.place.x, AP.h.place.y);
     }
 };
-BI.prototype.Cs = function () {
-    Z = new Array(new Array(0, -1, 0, -1, 0, 0, -21, 38, -21, 38, 0, 0, 0, 21, 38, 21, 38, 0, 0, 0, 45, 42, 45, 1, 0, 0.3, false, 0, new Array, 0));
-    b = new Array(new Array(2, -3, 2, -3, 0, 0, -23, 35, -23, 35, 0, 0, 0, 23, 35, 23, 35, 0, 0, 0, 47, 45, 45, 1, 0, 0.3, false, 0, new Array, 0));
+track.prototype.Cs = function () {
+    bmxConstants = new Array(new Array(0, -1, 0, -1, 0, 0, -21, 38, -21, 38, 0, 0, 0, 21, 38, 21, 38, 0, 0, 0, 45, 42, 45, 1, 0, 0.3, false, 0, new Array, 0));
+    mtbConstants = new Array(new Array(2, -3, 2, -3, 0, 0, -23, 35, -23, 35, 0, 0, 0, 23, 35, 23, 35, 0, 0, 0, 47, 45, 45, 1, 0, 0.3, false, 0, new Array, 0));
     if (W) {
         K = this.AT[6] == "BMX" ? new Array(new Array(0, -1, 0, -1, 0, 0, -21, 38, -21, 38, 0, 0, 0, 21, 38, 21, 38, 0, 0, 0, 45, 42, 45, 1, 0, 0.3, false, 0, 0, 0, 0)) : new Array(new Array(2, -3, 2, -3, 0, 0, -23, 35, -23, 35, 0, 0, 0, 23, 35, 23, 35, 0, 0, 0, 47, 45, 45, 1, 0, 0.3, false, 0, 0, 0, 0));
     }
-    this.C2();
+    this.restart();
 };
-BI.prototype.DV = function () {
+track.prototype.DV = function () {
     for (var x in this.I) {
         for (var y in this.I[x]) {
-            for (var j = 0; j < this.I[x][y].AD.length; j++) {
-                if (this.I[x][y].AD[j].BM != undefined) {
-                    this.I[x][y].AD[j].BM = false;
+            for (var j = 0; j < this.I[x][y].objects.length; j++) {
+                if (this.I[x][y].objects[j].BM != undefined) {
+                    this.I[x][y].objects[j].BM = false;
                 }
             }
         }
     }
 };
-BI.prototype.Ad = function (AV) {
+track.prototype.Ad = function (AV) {
     var x = Math.floor(AV.place.x / this.q - 0.5);
     var y = Math.floor(AV.place.y / this.q - 0.5);
     if (this.I[x] != undefined) {
@@ -2108,35 +2108,35 @@ BI.prototype.Ad = function (AV) {
         this.I[x][y + 1].Ad(AV);
     }
 };
-BI.prototype.draw = function () {
+track.prototype.draw = function () {
     if (focus && this.ID != "banner") {
-        this.A5.add(focus.place.cloneSub(this.A5).cloneReciprocalScale(5));
+        this.cameraCenter.add(focus.place.cloneSub(this.cameraCenter).cloneReciprocalScale(5));
     }
     graphics.clearRect(0, 0, canvas.width, canvas.height);
-    graphics.lineWidth = Math.max(2 * this.H, 0.5);
-    if ((currentTool == "line" || currentTool == "scenery line" || currentTool == "brush" || currentTool == "scenery brush") && A0) {
-        if (w.o().x < 50) {
-            C.A5.x -= 10 / this.H;
-            w.x -= 10 / this.H;
-        } else if (w.o().x > canvas.width - 50) {
-            C.A5.x += 10 / this.H;
-            w.x += 10 / this.H;
+    graphics.lineWidth = Math.max(2 * this.zoomFactor, 0.5);
+    if ((currentTool == "line" || currentTool == "scenery line" || currentTool == "brush" || currentTool == "scenery brush") && snapFromPrevLine) {
+        if (mousePos.normalizeToWorld().x < 50) {
+            theTrack.cameraCenter.x -= 10 / this.zoomFactor;
+            mousePos.x -= 10 / this.zoomFactor;
+        } else if (mousePos.normalizeToWorld().x > canvas.width - 50) {
+            theTrack.cameraCenter.x += 10 / this.zoomFactor;
+            mousePos.x += 10 / this.zoomFactor;
         }
-        if (w.o().y < 50) {
-            C.A5.y -= 10 / this.H;
-            w.y -= 10 / this.H;
-        } else if (w.o().y > canvas.height - 50) {
-            C.A5.y += 10 / this.H;
-            w.y += 10 / this.H;
+        if (mousePos.normalizeToWorld().y < 50) {
+            theTrack.cameraCenter.y -= 10 / this.zoomFactor;
+            mousePos.y -= 10 / this.zoomFactor;
+        } else if (mousePos.normalizeToWorld().y > canvas.height - 50) {
+            theTrack.cameraCenter.y += 10 / this.zoomFactor;
+            mousePos.y += 10 / this.zoomFactor;
         }
         graphics.beginPath();
         graphics.strokeStyle = "red";
-        graphics.moveTo(AF.o().x, AF.o().y);
-        graphics.lineTo(w.o().x, w.o().y);
+        graphics.moveTo(lastClick.normalizeToWorld().x, lastClick.normalizeToWorld().y);
+        graphics.lineTo(mousePos.normalizeToWorld().x, mousePos.normalizeToWorld().y);
         graphics.stroke();
     }
-    var A_ = (new Location(0, 0)).Cr();
-    var CH = (new Location(canvas.width, canvas.height)).Cr();
+    var A_ = (new Location(0, 0)).normalizeToCanvas();
+    var CH = (new Location(canvas.width, canvas.height)).normalizeToCanvas();
     A_.x = Math.floor(A_.x / this.q);
     A_.y = Math.floor(A_.y / this.q);
     CH.x = Math.floor(CH.x / this.q);
@@ -2149,31 +2149,31 @@ BI.prototype.draw = function () {
                     DI[x + "_" + y] = 1;
                     if (this.Ax[x + "_" + y] == undefined) {
                         this.Ax[x + "_" + y] = document.createElement("canvas");
-                        this.Ax[x + "_" + y].width = this.q * this.H;
-                        this.Ax[x + "_" + y].height = this.q * this.H;
+                        this.Ax[x + "_" + y].width = this.q * this.zoomFactor;
+                        this.Ax[x + "_" + y].height = this.q * this.zoomFactor;
                         var graphic = this.Ax[x + "_" + y].getContext("2d");
                         graphic.lineCap = "round";
-                        graphic.lineWidth = Math.max(2 * this.H, 0.5);
+                        graphic.lineWidth = Math.max(2 * this.zoomFactor, 0.5);
                         graphic.strokeStyle = "#AAAAAA";
                         for (var v = 0; v < this.I[x][y].AL.length; v++) {
-                            this.I[x][y].AL[v].custDraw(this.Ax[x + "_" + y].getContext("2d"), x * this.q * this.H, y * this.q * this.H);
+                            this.I[x][y].AL[v].custDraw(this.Ax[x + "_" + y].getContext("2d"), x * this.q * this.zoomFactor, y * this.q * this.zoomFactor);
                         }
                         graphic.strokeStyle = "black";
                         if (shadeLines) {
                             graphic.shadowOffsetX = 2;
                             graphic.shadowOffsetY = 2;
-                            graphic.shadowBlur = Math.max(2, 10 * this.H);
+                            graphic.shadowBlur = Math.max(2, 10 * this.zoomFactor);
                             graphic.shadowColor = "black";
                         }
                         for (var P = 0; P < this.I[x][y].AG.length; P++) {
-                            this.I[x][y].AG[P].custDraw(this.Ax[x + "_" + y].getContext("2d"), x * this.q * this.H, y * this.q * this.H);
+                            this.I[x][y].AG[P].custDraw(this.Ax[x + "_" + y].getContext("2d"), x * this.q * this.zoomFactor, y * this.q * this.zoomFactor);
                         }
                     }
-                    graphics.drawImage(this.Ax[x + "_" + y], Math.floor(canvas.width / 2 - this.A5.x * this.H + x * this.q * this.H), Math.floor(canvas.height / 2 - this.A5.y * this.H + y * this.q * this.H));
+                    graphics.drawImage(this.Ax[x + "_" + y], Math.floor(canvas.width / 2 - this.cameraCenter.x * this.zoomFactor + x * this.q * this.zoomFactor), Math.floor(canvas.height / 2 - this.cameraCenter.y * this.zoomFactor + y * this.q * this.zoomFactor));
                 }
                 graphics.strokeStyle = "black";
-                for (var j = 0; j < this.I[x][y].AD.length; j++) {
-                    this.I[x][y].AD[j].draw();
+                for (var j = 0; j < this.I[x][y].objects.length; j++) {
+                    this.I[x][y].objects[j].draw();
                 }
             }
         }
@@ -2195,8 +2195,8 @@ BI.prototype.draw = function () {
             graphics.beginPath();
             graphics.lineWidth = 1;
             graphics.strokeStyle = "black";
-            var x = Math.round(w.o().x);
-            var y = Math.round(w.o().y);
+            var x = Math.round(mousePos.normalizeToWorld().x);
+            var y = Math.round(mousePos.normalizeToWorld().y);
             graphics.moveTo(x - 10, y);
             graphics.lineTo(x + 10, y);
             graphics.moveTo(x, y + 10);
@@ -2206,7 +2206,7 @@ BI.prototype.draw = function () {
         case "eraser":
             graphics.beginPath();
             graphics.fillStyle = "lightpink";
-            graphics.arc(w.o().x, w.o().y, (BH - 1) * this.H, 0, 2 * Math.PI, true);
+            graphics.arc(mousePos.normalizeToWorld().x, mousePos.normalizeToWorld().y, (eraserSize - 1) * this.zoomFactor, 0, 2 * Math.PI, true);
             graphics.fill();
             break;
         case "goal":
@@ -2214,7 +2214,7 @@ BI.prototype.draw = function () {
         case "bomb":
             graphics.beginPath();
             graphics.fillStyle = currentTool == "goal" ? "yellow" : currentTool == "checkpoint" ? "blue" : "red";
-            graphics.arc(w.o().x, w.o().y, 7 * this.H, 0, 2 * Math.PI, true);
+            graphics.arc(mousePos.normalizeToWorld().x, mousePos.normalizeToWorld().y, 7 * this.zoomFactor, 0, 2 * Math.PI, true);
             graphics.fill();
             graphics.stroke();
             break;
@@ -2223,16 +2223,16 @@ BI.prototype.draw = function () {
             graphics.beginPath();
             graphics.fillStyle = currentTool == "boost" ? "yellow" : "#00FF00";
             graphics.save();
-            if (!A0) {
-                graphics.translate(w.o().x, w.o().y);
+            if (!snapFromPrevLine) {
+                graphics.translate(mousePos.normalizeToWorld().x, mousePos.normalizeToWorld().y);
             } else {
-                graphics.translate(AF.o().x, AF.o().y);
-                graphics.rotate(Math.atan2(-(w.x - AF.x), w.y - AF.y));
+                graphics.translate(lastClick.normalizeToWorld().x, lastClick.normalizeToWorld().y);
+                graphics.rotate(Math.atan2(-(mousePos.x - lastClick.x), mousePos.y - lastClick.y));
             }
-            graphics.moveTo(-7 * C.H, -10 * C.H);
-            graphics.lineTo(0, 10 * C.H);
-            graphics.lineTo(7 * C.H, -10 * C.H);
-            graphics.lineTo(-7 * C.H, -10 * C.H);
+            graphics.moveTo(-7 * theTrack.zoomFactor, -10 * theTrack.zoomFactor);
+            graphics.lineTo(0, 10 * theTrack.zoomFactor);
+            graphics.lineTo(7 * theTrack.zoomFactor, -10 * theTrack.zoomFactor);
+            graphics.lineTo(-7 * theTrack.zoomFactor, -10 * theTrack.zoomFactor);
             graphics.fill();
             graphics.stroke();
             graphics.restore();
@@ -2251,10 +2251,10 @@ BI.prototype.draw = function () {
     graphics.lineWidth = 10;
     graphics.strokeStyle = "white";
     graphics.fillStyle = "black";
-    if (Bb) {
+    if (paused) {
         var text = "Game paused";
     } else if (AP.A9) {
-        var text = Z.length > 1 || b.length > 1 ? "Press ENTER to restart or BACKSPACE to cancel checkpoint" : "Press ENTER to restart";
+        var text = bmxConstants.length > 1 || mtbConstants.length > 1 ? "Press ENTER to restart or BACKSPACE to cancel checkpoint" : "Press ENTER to restart";
     } else if (this.ID == undefined || this.ID == "banner") {
         var text = "CANVAS RIDER RC7";
         if (this.ID == undefined) {
@@ -2263,7 +2263,7 @@ BI.prototype.draw = function () {
             }
             text += " - " + currentTool;
             if (currentTool == "brush" || currentTool == "scenery brush") {
-                text += " ( size " + CF + " )";
+                text += " ( size " + drawingSize + " )";
             }
         }
         if ((label && label[0] && !label[1])) {
@@ -2282,10 +2282,10 @@ BI.prototype.draw = function () {
         var text = CN + ":" + CK + "." + Dd;
     }
     if (label && !label[0] && !label[1]) {
-        text += " - " + (Bb ? "Unpause" : "Pause") + " ( SPACE )";
+        text += " - " + (paused ? "Unpause" : "Pause") + " ( SPACE )";
     }
-    graphics.strokeText(": " + this.Be + " / " + this.BU + "  -  " + text, 50, 16);
-    graphics.fillText(": " + this.Be + " / " + this.BU + "  -  " + text, 50, 16);
+    graphics.strokeText(": " + this.targetsReached + " / " + this.numTargets + "  -  " + text, 50, 16);
+    graphics.fillText(": " + this.targetsReached + " / " + this.numTargets + "  -  " + text, 50, 16);
     if (label) {
         if (!label[0]) {
             graphics.strokeText(label[2], 36, 15 + label[1] * 25);
@@ -2303,65 +2303,65 @@ BI.prototype.draw = function () {
         }
     }
 };
-BI.prototype.Aj = function (U) {
-    var x = Math.floor(U.x / this.q - 0.5);
-    var y = Math.floor(U.y / this.q - 0.5);
+track.prototype.checkDelete = function (eraserLocation) {
+    var x = Math.floor(eraserLocation.x / this.q - 0.5);
+    var y = Math.floor(eraserLocation.y / this.q - 0.5);
     if (this.I[x] != undefined) {
         if (this.I[x][y] != undefined) {
             for (var P = 0; P < this.I[x][y].AG.length; P++) {
-                this.I[x][y].AG[P].Aj(U);
+                this.I[x][y].AG[P].checkDelete(eraserLocation);
             }
             for (var v = 0; v < this.I[x][y].AL.length; v++) {
-                this.I[x][y].AL[v].Aj(U);
+                this.I[x][y].AL[v].checkDelete(eraserLocation);
             }
-            for (var j = 0; j < this.I[x][y].AD.length; j++) {
-                this.I[x][y].AD[j].Aj(U);
+            for (var j = 0; j < this.I[x][y].objects.length; j++) {
+                this.I[x][y].objects[j].checkDelete(eraserLocation);
             }
         }
         if (this.I[x][y + 1] != undefined) {
             for (var P = 0; P < this.I[x][y + 1].AG.length; P++) {
-                this.I[x][y + 1].AG[P].Aj(U);
+                this.I[x][y + 1].AG[P].checkDelete(eraserLocation);
             }
             for (var v = 0; v < this.I[x][y + 1].AL.length; v++) {
-                this.I[x][y + 1].AL[v].Aj(U);
+                this.I[x][y + 1].AL[v].checkDelete(eraserLocation);
             }
-            for (var j = 0; j < this.I[x][y + 1].AD.length; j++) {
-                this.I[x][y + 1].AD[j].Aj(U);
+            for (var j = 0; j < this.I[x][y + 1].objects.length; j++) {
+                this.I[x][y + 1].objects[j].checkDelete(eraserLocation);
             }
         }
     }
     if (this.I[x + 1] != undefined) {
         if (this.I[x + 1][y] != undefined) {
             for (var P = 0; P < this.I[x + 1][y].AG.length; P++) {
-                this.I[x + 1][y].AG[P].Aj(U);
+                this.I[x + 1][y].AG[P].checkDelete(eraserLocation);
             }
             for (var v = 0; v < this.I[x + 1][y].AL.length; v++) {
-                this.I[x + 1][y].AL[v].Aj(U);
+                this.I[x + 1][y].AL[v].checkDelete(eraserLocation);
             }
-            for (var j = 0; j < this.I[x + 1][y].AD.length; j++) {
-                this.I[x + 1][y].AD[j].Aj(U);
+            for (var j = 0; j < this.I[x + 1][y].objects.length; j++) {
+                this.I[x + 1][y].objects[j].checkDelete(eraserLocation);
             }
         }
         if (this.I[x + 1][y + 1] != undefined) {
             for (var P = 0; P < this.I[x + 1][y + 1].AG.length; P++) {
-                this.I[x + 1][y + 1].AG[P].Aj(U);
+                this.I[x + 1][y + 1].AG[P].checkDelete(eraserLocation);
             }
             for (var v = 0; v < this.I[x + 1][y + 1].AL.length; v++) {
-                this.I[x + 1][y + 1].AL[v].Aj(U);
+                this.I[x + 1][y + 1].AL[v].checkDelete(eraserLocation);
             }
-            for (var j = 0; j < this.I[x + 1][y + 1].AD.length; j++) {
-                this.I[x + 1][y + 1].AD[j].Aj(U);
+            for (var j = 0; j < this.I[x + 1][y + 1].objects.length; j++) {
+                this.I[x + 1][y + 1].objects[j].checkDelete(eraserLocation);
             }
         }
     }
-    for (var j = 0; j < this.AD.length; j++) {
-        if (this.AD[j].remove != undefined) {
-            this.AD.splice(j, 1);
+    for (var j = 0; j < this.objects.length; j++) {
+        if (this.objects[j].remove != undefined) {
+            this.objects.splice(j, 1);
             j--;
         }
     }
 };
-BI.prototype.remove = function (Av, BZ) {
+track.prototype.remove = function (Av, BZ) {
     if (BZ == undefined) {
         BZ = Av;
     }
@@ -2373,35 +2373,35 @@ BI.prototype.remove = function (Av, BZ) {
         delete this.Ax[x + "_" + y];
     }
 };
-BI.prototype.DK = function () {
+track.prototype.shortenLastLineSet = function () {
     if (currentTool == "scenery line" || currentTool == "scenery brush") {
-        var x = Math.floor(Bg.x / this.q);
-        var y = Math.floor(Bg.y / this.q);
+        var x = Math.floor(lastScenery.x / this.q);
+        var y = Math.floor(lastScenery.y / this.q);
         var v = this.I[x][y].AL[this.I[x][y].AL.length - 1];
-        if (v != undefined && v.AK.x == Math.round(Bg.x) && v.AK.y == Math.round(Bg.y)) {
+        if (v != undefined && v.AK.x == Math.round(lastScenery.x) && v.AK.y == Math.round(lastScenery.y)) {
             v.remove = true;
-            Bg.set(v.AH);
+            lastScenery.set(v.AH);
             this.remove(v.AH, v.AK);
         } else {
             alert("No more scenery line to erase!");
         }
     } else {
-        var x = Math.floor(Bf.x / this.q);
-        var y = Math.floor(Bf.y / this.q);
+        var x = Math.floor(lastForeground.x / this.q);
+        var y = Math.floor(lastForeground.y / this.q);
         var P = this.I[x][y].AG[this.I[x][y].AG.length - 1];
-        if (P != undefined && P.AK.x == Math.round(Bf.x) && P.AK.y == Math.round(Bf.y)) {
+        if (P != undefined && P.AK.x == Math.round(lastForeground.x) && P.AK.y == Math.round(lastForeground.y)) {
             P.remove = true;
-            Bf.set(P.AH);
+            lastForeground.set(P.AH);
             this.remove(P.AH, P.AK);
         } else {
             alert("No more line to erase!");
         }
     }
 };
-BI.prototype.asString = function () {
+track.prototype.asString = function () {
     var AG = "";
     var AL = "";
-    var AD = "";
+    var objects = "";
     for (var x in this.I) {
         for (var y in this.I[x]) {
             for (var P = 0; P < this.I[x][y].AG.length; P++) {
@@ -2414,8 +2414,8 @@ BI.prototype.asString = function () {
                     AL += this.I[x][y].AL[v].AH.x.toString(32) + " " + this.I[x][y].AL[v].AH.y.toString(32) + this.I[x][y].AL[v].CR() + ",";
                 }
             }
-            for (var j = 0; j < this.I[x][y].AD.length; j++) {
-                AD += this.I[x][y].AD[j].asString() + ",";
+            for (var j = 0; j < this.I[x][y].objects.length; j++) {
+                objects += this.I[x][y].objects[j].asString() + ",";
             }
         }
     }
@@ -2429,7 +2429,7 @@ BI.prototype.asString = function () {
             }
         }
     }
-    return AG.substr(0, AG.length - 1) + "#" + AL.substr(0, AL.length - 1) + "#" + AD.substr(0, AD.length - 1) + "#" + B3;
+    return AG.substr(0, AG.length - 1) + "#" + AL.substr(0, AL.length - 1) + "#" + objects.substr(0, objects.length - 1) + "#" + currentBike;
 };
 if (location.href.substr(0, 22) != "http://canvasrider.com") {
     location.href = "http://canvasrider.com";
@@ -2449,58 +2449,57 @@ toolbar1.style.display = "block";
 var toolbar2 = document.getElementById("toolbar2");
 toolbar2.style.top = canvas.offsetTop + "px";
 toolbar2.style.left = canvas.offsetLeft + canvas.width - 22 + "px";
-var C;
-var Bb = false;
-var B3 = "BMX";
-var De = "BMX";
-var Z = new Array(new Array(0, -1, 0, -1, 0, 0, -21, 38, -21, 38, 0, 0, 0, 21, 38, 21, 38, 0, 0, 0, 45, 42, 45, 1, 0, 0.3, false, 0, new Array, 0));
-var b = new Array(new Array(2, -3, 2, -3, 0, 0, -23, 35, -23, 35, 0, 0, 0, 23, 35, 23, 35, 0, 0, 0, 47, 45, 45, 1, 0, 0.3, false, 0, new Array, 0));
+var theTrack;
+var paused = false;
+var currentBike = "BMX";
+var bmxConstants = new Array(new Array(0, -1, 0, -1, 0, 0, -21, 38, -21, 38, 0, 0, 0, 21, 38, 21, 38, 0, 0, 0, 45, 42, 45, 1, 0, 0.3, false, 0, new Array, 0));
+var mtbConstants = new Array(new Array(2, -3, 2, -3, 0, 0, -23, 35, -23, 35, 0, 0, 0, 23, 35, 23, 35, 0, 0, 0, 47, 45, 45, 1, 0, 0.3, false, 0, new Array, 0));
 var K;
 var AZ = new Array(new Array, new Array, new Array, new Array, new Array);
 var left = 0;
 var right = 0;
-var AW = 0;
-var AR = 0;
+var up = 0;
+var down = 0;
 var Aq = 0;
 var Ct = true;
 var focus;
-var A0 = false;
-var AF = new Location(40, 50);
-var w = new Location(0, 0);
+var snapFromPrevLine = false;
+var lastClick = new Location(40, 50);
+var mousePos = new Location(0, 0);
 var W = false;
-var BH = 15;
+var eraserSize = 15;
 var shift = false;
-var CF = 20;
+var drawingSize = 20;
 var currentTool = "camera";
-var DJ = "camera";
-var C0 = false;
+var lastTool = "camera";
+var leaveCameraOnReleaseR = false;
 var label = false;
 var gridDetail = 1;
 shadeLines = false;
 var hints = new Array(new Array("", "Restart ( ENTER )", "Cancel checkpoint ( BACKSPACE )", "", "Switch bike ( B - Arrows to control, Z to turn )", "", "Enable line shading", "Enable fullscreen ( F )"), new Array("Brush ( A - Hold to snap, hold & scroll to adjust size )", "Scenery brush ( S - Hold to snap, hold & scroll to adjust size )", "Lines ( Q - Hold to snap )", "Scenery lines ( W - Hold to snap )", "Eraser ( E - Hold & scroll to adjust size )", "Camera ( R - Release or press again to switch back, scroll to zoom )", "Enable grid snapping ( G )", "", "Goal", "Checkpoint", "Boost", "Gravity modifier", "Bomb", "", "Shorten last set of lines ( Z )"));
-var Bf = new Location(40, 50);
-var Bg = new Location(-40, 50);
+var lastForeground = new Location(40, 50);
+var lastScenery = new Location(-40, 50);
 
 function canvas_ride(DZ, Db) {
-    C = new BI(DZ, Db);
-    AP = B3 == "BMX" ? new Bk : new Bn;
+    theTrack = new track(DZ, Db);
+    AP = currentBike == "BMX" ? new Bk : new Bn;
     focus = AP.h;
     setInterval(run, 40);
 }
 
 function run() {
-    if (!Bb) {
+    if (!paused) {
         AP.AO();
         if (W) {
             W.AO();
         }
     }
-    C.draw();
+    theTrack.draw();
     AP.draw();
     if (W) {
         W.draw();
     }
-    if (!Bb) {
+    if (!paused) {
         AP.z += 40;
     }
 }
@@ -2508,25 +2507,25 @@ function watchGhost(DX) {
     var request = new XMLHttpRequest;
     request.open("POST", "js/load.php", false);
     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    request.send("track=" + C.ID + "&ghost=" + DX);
+    request.send("track=" + theTrack.ID + "&ghost=" + DX);
     var DW = request.responseText;
     var CJ = DW.split(",");
-    C.AT = new Array(new Array, new Array, new Array, new Array, new Array, CJ[5], CJ[6]);
+    theTrack.AT = new Array(new Array, new Array, new Array, new Array, new Array, CJ[5], CJ[6]);
     for (var BD = 0; BD < CJ.length - 2; BD++) {
         var DT = CJ[BD].split(" ");
         for (var Ay = 0; Ay < DT.length - 1; Ay++) {
-            C.AT[BD][DT[Ay]] = 1;
+            theTrack.AT[BD][DT[Ay]] = 1;
         }
     }
     W = CJ[5];
-    C.Cs();
+    theTrack.Cs();
 }
 function switchBikes() {
-    B3 = B3 == "BMX" ? "MTB" : "BMX";
-    C.Cs();
+    currentBike = currentBike == "BMX" ? "MTB" : "BMX";
+    theTrack.Cs();
 }
 function toggleFullscreen() {
-    if (C.ID != "banner" && canvas.width != 250) {
+    if (theTrack.ID != "banner" && canvas.width != 250) {
         if (canvas.width == 600) {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -2562,86 +2561,86 @@ function toggleFullscreen() {
 }
 document.onkeydown = function (event) {
     switch (event.keyCode) {
-    case 8:
+    case 8: // backspace
         if (canvas.width != 250) {
             event.preventDefault();
         }
-        C.DR();
-        C.C2();
+        theTrack.popCheckpoint();
+        theTrack.restart();
         break;
-    case 13:
+    case 13: // enter
         event.preventDefault();
-        C.C2();
+        theTrack.restart();
         break;
-    case 37:
+    case 37: // left
         event.preventDefault();
         focus = AP.h;
         left = 1;
         break;
-    case 39:
+    case 39: // right
         event.preventDefault();
         focus = AP.h;
         right = 1;
         break;
-    case 38:
+    case 38: // up
         event.preventDefault();
         focus = AP.h;
-        AW = 1;
+        up = 1;
         break;
-    case 40:
+    case 40: // down
         event.preventDefault();
         focus = AP.h;
-        AR = 1;
+        down = 1;
         break;
-    case 109:
-        if (C.H > 0.2) {
-            C.H = Math.round(C.H * 10 - 2) / 10;
-            C.Ax = new Array;
+    case 109: // minus
+        if (theTrack.zoomFactor > 0.2) {
+            theTrack.zoomFactor = Math.round(theTrack.zoomFactor * 10 - 2) / 10;
+            theTrack.Ax = new Array;
         }
         break;
-    case 107:
-        if (C.H < 4) {
-            C.H = Math.round(C.H * 10 + 2) / 10;
-            C.Ax = new Array;
+    case 107: // plus
+        if (theTrack.zoomFactor < 4) {
+            theTrack.zoomFactor = Math.round(theTrack.zoomFactor * 10 + 2) / 10;
+            theTrack.Ax = new Array;
         }
         break;
-    case 90:
-        if (!focus && C.ID == undefined) {
-            C.DK();
+    case 90: // Z
+        if (!focus && theTrack.ID == undefined) {
+            theTrack.shortenLastLineSet();
         } else if (Ct) {
             Aq = 1;
         }
         break;
-    case 32:
+    case 32: // space
         if (canvas.width != 250) {
             event.preventDefault();
         }
-        Bb = !Bb;
+        paused = !paused;
         break;
     default:
         ;
     }
-    if (C.ID == undefined) {
+    if (theTrack.ID == undefined) {
         switch (event.keyCode) {
         case 65:
             if (currentTool != "brush") {
                 currentTool = "brush";
                 document.body.style.cursor = "none";
                 shift = true;
-            } else if (!A0) {
-                A0 = true;
-                AF.set(Bf);
+            } else if (!snapFromPrevLine) {
+                snapFromPrevLine = true;
+                lastClick.set(lastForeground);
                 shift = true;
             }
             break;
-        case 83:
+        case 83: // S
             if (currentTool != "scenery brush") {
                 currentTool = "scenery brush";
                 document.body.style.cursor = "none";
                 shift = true;
-            } else if (!A0) {
-                A0 = true;
-                AF.set(Bg);
+            } else if (!snapFromPrevLine) {
+                snapFromPrevLine = true;
+                lastClick.set(lastScenery);
                 shift = true;
             }
             break;
@@ -2649,9 +2648,9 @@ document.onkeydown = function (event) {
             if (currentTool != "line") {
                 currentTool = "line";
                 document.body.style.cursor = "none";
-            } else if (!A0) {
-                A0 = true;
-                AF.set(Bf);
+            } else if (!snapFromPrevLine) {
+                snapFromPrevLine = true;
+                lastClick.set(lastForeground);
                 shift = true;
             }
             break;
@@ -2659,9 +2658,9 @@ document.onkeydown = function (event) {
             if (currentTool != "scenery line") {
                 currentTool = "scenery line";
                 document.body.style.cursor = "none";
-            } else if (!A0) {
-                A0 = true;
-                AF.set(Bg);
+            } else if (!snapFromPrevLine) {
+                snapFromPrevLine = true;
+                lastClick.set(lastScenery);
                 shift = true;
             }
             break;
@@ -2670,13 +2669,13 @@ document.onkeydown = function (event) {
             document.body.style.cursor = "none";
             shift = true;
             break;
-        case 82:
+        case 82: // R
             if (currentTool != "camera") {
-                DJ = currentTool;
+                lastTool = currentTool;
                 currentTool = "camera";
                 document.body.style.cursor = "move";
             } else {
-                C0 = true;
+                leaveCameraOnReleaseR = true;
             }
             break;
         default:
@@ -2686,15 +2685,15 @@ document.onkeydown = function (event) {
 };
 document.onkeypress = function (event) {
     switch (event.keyCode) {
-    case 13:
-    case 37:
-    case 39:
-    case 38:
-    case 40:
+    case 13: // enter
+    case 37: // left
+    case 39: // right
+    case 38: // up
+    case 40: // down
         event.preventDefault();
         break;
-    case 8:
-    case 32:
+    case 8: // backspace
+    case 32: // space
         if (canvas.width != 250) {
             event.preventDefault();
         }
@@ -2706,10 +2705,10 @@ document.onkeypress = function (event) {
 document.onkeyup = function (event) {
     switch (event.keyCode) {
     case 70:
-    case 27:
+    case 27: // esc, f
         toggleFullscreen();
         break;
-    case 66:
+    case 66: // B
         switchBikes();
         break;
     case 37:
@@ -2719,12 +2718,12 @@ document.onkeyup = function (event) {
         right = 0;
         break;
     case 38:
-        AW = 0;
+        up = 0;
         break;
     case 40:
-        AR = 0;
+        down = 0;
         break;
-    case 90:
+    case 90: // Z
         Ct = true;
         break;
     case 71: // grid snapping (G)
@@ -2736,30 +2735,30 @@ document.onkeyup = function (event) {
             hints[1][6] = "Enable grid snapping ( G )";
         }
         break;
-    case 82:
-        if (C0) {
-            currentTool = DJ;
+    case 82: // R (camera toggle)
+        if (leaveCameraOnReleaseR) {
+            currentTool = lastTool;
             document.body.style.cursor = "none";
-            C0 = false;
+            leaveCameraOnReleaseR = false;
         }
         break;
-    case 49:
-    case 50:
-    case 51:
-    case 52:
-    case 53:
-        if (C.ID != undefined) {
+    case 49: // 1
+    case 50: // 2
+    case 51: // 3
+    case 52: // 4
+    case 53: // 5
+        if (theTrack.ID != undefined) {
             watchGhost(event.keyCode - 48);
         }
         break;
-    case 81:
-    case 87:
-    case 69:
-    case 83:
-    case 65:
+    case 81: // Q
+    case 87: // W
+    case 69: // E
+    case 83: // S
+    case 65: // A
         if (shift) {
             shift = false;
-            A0 = false;
+            snapFromPrevLine = false;
         }
         break;
     default:
@@ -2783,12 +2782,12 @@ toolbar1.onmousedown = function (event) {
     focus = false;
     switch (Math.floor((event.clientY - toolbar1.offsetTop + window.pageYOffset) / 25) + 1) {
     case 1:
-        Bb = !Bb;
+        paused = !paused;
         break;
     case 3:
-        C.DR();
+        theTrack.popCheckpoint();
     case 2:
-        C.C2();
+        theTrack.restart();
         break;
     case 5:
         switchBikes();
@@ -2801,7 +2800,7 @@ toolbar1.onmousedown = function (event) {
             shadeLines = false;
             label[2] = hints[0][6] = "Enable line shading";
         }
-        C.Ax = new Array;
+        theTrack.Ax = new Array;
         break;
     case 8:
         toggleFullscreen();
@@ -2811,7 +2810,7 @@ toolbar1.onmousedown = function (event) {
     }
 };
 toolbar2.onmousedown = function (event) {
-    if (C.ID != undefined) return false;
+    if (theTrack.ID != undefined) return false;
     focus = false;
     switch (Math.floor((event.clientY - toolbar1.offsetTop + window.pageYOffset) / 25) + 1) {
     case 1:
@@ -2857,7 +2856,7 @@ toolbar2.onmousedown = function (event) {
         currentTool = "bomb";
         break;
     case 15:
-        C.DK();
+        theTrack.shortenLastLineSet();
         break;
     default:
         ;
@@ -2872,10 +2871,10 @@ canvas.onmouseover = function () {
     }
 };
 canvas.onmousedown = function (event) {
-    A0 = true;
+    snapFromPrevLine = true;
     focus = false;
     if (!shift) {
-        AF.set(w);
+        lastClick.set(mousePos);
     }
     switch (currentTool) {
     case "boost":
@@ -2883,170 +2882,170 @@ canvas.onmousedown = function (event) {
         document.body.style.cursor = "crosshair";
         break;
     case "eraser":
-        C.Aj(w);
+        theTrack.checkDelete(mousePos);
         break;
     case "goal":
-        var Ag = new target(AF.x, AF.y);
-        C.BU++;
-        C.AD.push(Ag);
+        var Ag = new target(lastClick.x, lastClick.y);
+        theTrack.numTargets++;
+        theTrack.objects.push(Ag);
         break;
     case "checkpoint":
-        var Ag = new checkpoint(AF.x, AF.y);
-        C.AD.push(Ag);
+        var Ag = new checkpoint(lastClick.x, lastClick.y);
+        theTrack.objects.push(Ag);
         break;
     case "bomb":
-        var Ag = new bomb(AF.x, AF.y);
+        var Ag = new bomb(lastClick.x, lastClick.y);
         break;
     case "brush":
     case "scenery brush":
         if (shift) {
             if (currentTool == "brush") {
-                var P = new line(AF.x, AF.y, w.x, w.y);
+                var P = new line(lastClick.x, lastClick.y, mousePos.x, mousePos.y);
             } else {
-                var P = new B5(AF.x, AF.y, w.x, w.y);
+                var P = new B5(lastClick.x, lastClick.y, mousePos.x, mousePos.y);
             }
             if (P.length >= 2 && P.length < 100000) {
-                var I = CG(new Location(P.AH.x, P.AH.y), new Location(P.AK.x, P.AK.y), C.q);
+                var I = CG(new Location(P.AH.x, P.AH.y), new Location(P.AK.x, P.AK.y), theTrack.q);
                 for (var T = 0; T < I.length; T++) {
-                    var x = Math.floor(I[T].x / C.q);
-                    var y = Math.floor(I[T].y / C.q);
-                    if (C.I[x] == undefined) {
-                        C.I[x] = new Array;
+                    var x = Math.floor(I[T].x / theTrack.q);
+                    var y = Math.floor(I[T].y / theTrack.q);
+                    if (theTrack.I[x] == undefined) {
+                        theTrack.I[x] = new Array;
                     }
-                    if (C.I[x][y] == undefined) {
-                        C.I[x][y] = new BP;
+                    if (theTrack.I[x][y] == undefined) {
+                        theTrack.I[x][y] = new BP;
                     }
                     if (currentTool == "brush") {
-                        C.I[x][y].AG.push(P);
+                        theTrack.I[x][y].AG.push(P);
                     } else {
-                        C.I[x][y].AL.push(P);
+                        theTrack.I[x][y].AL.push(P);
                     }
-                    delete C.Ax[x + "_" + y];
+                    delete theTrack.Ax[x + "_" + y];
                 }
                 if (currentTool == "brush") {
-                    Bf.set(w);
+                    lastForeground.set(mousePos);
                 } else {
-                    Bg.set(w);
+                    lastScenery.set(mousePos);
                 }
-                AF.set(w);
+                lastClick.set(mousePos);
             }
         }
         shift = false;
-        A0 = true;
+        snapFromPrevLine = true;
         break;
     default:
         ;
     }
     if (Ag != undefined) {
-        var x = Math.floor(Ag.place.x / C.q);
-        var y = Math.floor(Ag.place.y / C.q);
-        if (C.I[x] == undefined) {
-            C.I[x] = new Array;
+        var x = Math.floor(Ag.place.x / theTrack.q);
+        var y = Math.floor(Ag.place.y / theTrack.q);
+        if (theTrack.I[x] == undefined) {
+            theTrack.I[x] = new Array;
         }
-        if (C.I[x][y] == undefined) {
-            C.I[x][y] = new BP(x, y);
+        if (theTrack.I[x][y] == undefined) {
+            theTrack.I[x][y] = new BP(x, y);
         }
-        C.I[x][y].AD.push(Ag);
+        theTrack.I[x][y].objects.push(Ag);
     }
 };
 document.onmousemove = function (event) {
     if (currentTool != "camera") {
         focus = false;
     }
-    w = (new Location(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop + window.pageYOffset)).Cr();
+    mousePos = (new Location(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop + window.pageYOffset)).normalizeToCanvas();
     if (currentTool != "eraser") {
-        w.x = Math.round(w.x / gridDetail) * gridDetail;
-        w.y = Math.round(w.y / gridDetail) * gridDetail;
+        mousePos.x = Math.round(mousePos.x / gridDetail) * gridDetail;
+        mousePos.y = Math.round(mousePos.y / gridDetail) * gridDetail;
     }
-    if (A0) {
+    if (snapFromPrevLine) {
         if (currentTool == "camera") {
-            C.A5.add(AF.cloneSub(w));
-            w.set(AF);
+            theTrack.cameraCenter.add(lastClick.cloneSub(mousePos));
+            mousePos.set(lastClick);
         } else if (currentTool == "eraser") {
-            C.Aj(w);
-        } else if ((currentTool == "brush" || currentTool == "scenery brush") && AF.cloneSub(w).length() >= CF && !shift) {
+            theTrack.checkDelete(mousePos);
+        } else if ((currentTool == "brush" || currentTool == "scenery brush") && lastClick.cloneSub(mousePos).length() >= drawingSize && !shift) {
             if (currentTool == "brush") {
-                var P = new line(AF.x, AF.y, w.x, w.y);
+                var P = new line(lastClick.x, lastClick.y, mousePos.x, mousePos.y);
             } else {
-                var P = new B5(AF.x, AF.y, w.x, w.y);
+                var P = new B5(lastClick.x, lastClick.y, mousePos.x, mousePos.y);
             }
-            var I = CG(new Location(P.AH.x, P.AH.y), new Location(P.AK.x, P.AK.y), C.q);
+            var I = CG(new Location(P.AH.x, P.AH.y), new Location(P.AK.x, P.AK.y), theTrack.q);
             for (var T = 0; T < I.length; T++) {
-                var x = Math.floor(I[T].x / C.q);
-                var y = Math.floor(I[T].y / C.q);
-                if (C.I[x] == undefined) {
-                    C.I[x] = new Array;
+                var x = Math.floor(I[T].x / theTrack.q);
+                var y = Math.floor(I[T].y / theTrack.q);
+                if (theTrack.I[x] == undefined) {
+                    theTrack.I[x] = new Array;
                 }
-                if (C.I[x][y] == undefined) {
-                    C.I[x][y] = new BP;
+                if (theTrack.I[x][y] == undefined) {
+                    theTrack.I[x][y] = new BP;
                 }
                 if (currentTool == "brush") {
-                    C.I[x][y].AG.push(P);
+                    theTrack.I[x][y].AG.push(P);
                 } else {
-                    C.I[x][y].AL.push(P);
+                    theTrack.I[x][y].AL.push(P);
                 }
-                delete C.Ax[x + "_" + y];
+                delete theTrack.Ax[x + "_" + y];
             }
             if (currentTool == "brush") {
-                Bf.set(w);
+                lastForeground.set(mousePos);
             } else {
-                Bg.set(w);
+                lastScenery.set(mousePos);
             }
-            AF.set(w);
+            lastClick.set(mousePos);
         }
     }
 };
 canvas.onmouseup = function () {
-    if (A0) {
+    if (snapFromPrevLine) {
         if (currentTool == "line" || currentTool == "scenery line" || currentTool == "brush" || currentTool == "scenery brush") {
             if (currentTool == "line" || currentTool == "brush") {
-                var P = new line(AF.x, AF.y, w.x, w.y);
+                var P = new line(lastClick.x, lastClick.y, mousePos.x, mousePos.y);
             } else {
-                var P = new B5(AF.x, AF.y, w.x, w.y);
+                var P = new B5(lastClick.x, lastClick.y, mousePos.x, mousePos.y);
             }
             if (P.length >= 2 && P.length < 100000) {
-                var I = CG(new Location(P.AH.x, P.AH.y), new Location(P.AK.x, P.AK.y), C.q);
+                var I = CG(new Location(P.AH.x, P.AH.y), new Location(P.AK.x, P.AK.y), theTrack.q);
                 for (var T = 0; T < I.length; T++) {
-                    var x = Math.floor(I[T].x / C.q);
-                    var y = Math.floor(I[T].y / C.q);
-                    if (C.I[x] == undefined) {
-                        C.I[x] = new Array;
+                    var x = Math.floor(I[T].x / theTrack.q);
+                    var y = Math.floor(I[T].y / theTrack.q);
+                    if (theTrack.I[x] == undefined) {
+                        theTrack.I[x] = new Array;
                     }
-                    if (C.I[x][y] == undefined) {
-                        C.I[x][y] = new BP;
+                    if (theTrack.I[x][y] == undefined) {
+                        theTrack.I[x][y] = new BP;
                     }
                     if (currentTool == "line" || currentTool == "brush") {
-                        C.I[x][y].AG.push(P);
+                        theTrack.I[x][y].AG.push(P);
                     } else {
-                        C.I[x][y].AL.push(P);
+                        theTrack.I[x][y].AL.push(P);
                     }
-                    delete C.Ax[x + "_" + y];
+                    delete theTrack.Ax[x + "_" + y];
                 }
                 if (currentTool == "line" || currentTool == "brush") {
-                    Bf.set(w);
+                    lastForeground.set(mousePos);
                 } else {
-                    Bg.set(w);
+                    lastScenery.set(mousePos);
                 }
-                AF.set(w);
+                lastClick.set(mousePos);
             }
         } else if (currentTool == "boost" || currentTool == "gravity") {
             document.body.style.cursor = "none";
-            var Ag = currentTool == "boost" ? new boost(AF.x, AF.y, Math.round(Math.atan2(-(w.x - AF.x), w.y - AF.y) * 180 / Math.PI)) : new gravity(AF.x, AF.y, Math.round(Math.atan2(-(w.x - AF.x), w.y - AF.y) * 180 / Math.PI));
-            var x = Math.floor(Ag.place.x / C.q);
-            var y = Math.floor(Ag.place.y / C.q);
-            if (C.I[x] == undefined) {
-                C.I[x] = new Array;
+            var Ag = currentTool == "boost" ? new boost(lastClick.x, lastClick.y, Math.round(Math.atan2(-(mousePos.x - lastClick.x), mousePos.y - lastClick.y) * 180 / Math.PI)) : new gravity(lastClick.x, lastClick.y, Math.round(Math.atan2(-(mousePos.x - lastClick.x), mousePos.y - lastClick.y) * 180 / Math.PI));
+            var x = Math.floor(Ag.place.x / theTrack.q);
+            var y = Math.floor(Ag.place.y / theTrack.q);
+            if (theTrack.I[x] == undefined) {
+                theTrack.I[x] = new Array;
             }
-            if (C.I[x][y] == undefined) {
-                C.I[x][y] = new BP(x, y);
+            if (theTrack.I[x][y] == undefined) {
+                theTrack.I[x][y] = new BP(x, y);
             }
-            C.I[x][y].AD.push(Ag);
+            theTrack.I[x][y].objects.push(Ag);
         }
     }
 };
 document.onmouseup = function () {
     if (!shift) {
-        A0 = false;
+        snapFromPrevLine = false;
     }
 };
 canvas.onmouseout = function () {
@@ -3054,25 +3053,25 @@ canvas.onmouseout = function () {
 };
 document.getElementById("new").onclick = function () {
     if (confirm("Do you really want to start a new track?")) {
-        C = new BI;
+        theTrack = new track;
         document.getElementById("charcount").innerHTML = "Trackcode";
         document.getElementById("trackcode").value = null;
-        C.Cs();
+        theTrack.Cs();
     }
 };
 document.getElementById("load").onclick = function () {
     if (document.getElementById("trackcode").value.length > 10) {
-        C = new BI(document.getElementById("trackcode").value);
+        theTrack = new track(document.getElementById("trackcode").value);
         document.getElementById("charcount").innerHTML = "Trackcode";
         document.getElementById("trackcode").value = null;
-        C.Cs();
+        theTrack.Cs();
     } else {
         alert("No trackcode to load!");
     }
 };
 document.getElementById("save").onclick = function () {
-    if (C.ID == undefined) {
-        document.getElementById("trackcode").value = C.asString();
+    if (theTrack.ID == undefined) {
+        document.getElementById("trackcode").value = theTrack.asString();
         document.getElementById("trackcode").select();
         document.getElementById("charcount").innerHTML = "Trackcode - " + Math.round(document.getElementById("trackcode").value.length / 1000) + "k - CTRL + C to copy";
     }
@@ -3089,9 +3088,9 @@ document.getElementById("upload").onclick = function () {
             end = document.cookie.length;
         }
         var Dc = document.cookie.substring(Ao, end);
-        var DH = C.asString();
+        var DH = theTrack.asString();
         if (DH.length > 2000) {
-            Bb = true;
+            paused = true;
             currentTool = "camera";
             canvas.width = 250;
             canvas.height = 150;
@@ -3154,33 +3153,33 @@ document.getElementById("upload").onclick = function () {
 };
 
 function onScroll(event) {
-    if (C.ID != "banner") {
+    if (theTrack.ID != "banner") {
         event.preventDefault();
         if (shift) {
             if (currentTool == "eraser") {
-                if ((event.detail > 0 || event.wheelDelta < 0) && BH > 5) {
-                    BH -= 5;
-                } else if ((event.detail < 0 || event.wheelDelta > 0) && BH < 40) {
-                    BH += 5;
+                if ((event.detail > 0 || event.wheelDelta < 0) && eraserSize > 5) {
+                    eraserSize -= 5;
+                } else if ((event.detail < 0 || event.wheelDelta > 0) && eraserSize < 40) {
+                    eraserSize += 5;
                 }
             } else if (currentTool == "brush" || currentTool == "scenery brush") {
-                if ((event.detail > 0 || event.wheelDelta < 0) && CF > 4) {
-                    CF -= 8;
-                } else if ((event.detail < 0 || event.wheelDelta > 0) && CF < 200) {
-                    CF += 8;
+                if ((event.detail > 0 || event.wheelDelta < 0) && drawingSize > 4) {
+                    drawingSize -= 8;
+                } else if ((event.detail < 0 || event.wheelDelta > 0) && drawingSize < 200) {
+                    drawingSize += 8;
                 }
             }
         } else {
-            if ((event.detail > 0 || event.wheelDelta < 0) && C.H > 0.2) {
-                C.H = Math.round(C.H * 10 - 2) / 10;
-            } else if ((event.detail < 0 || event.wheelDelta > 0) && C.H < 4) {
-                C.H = Math.round(C.H * 10 + 2) / 10;
+            if ((event.detail > 0 || event.wheelDelta < 0) && theTrack.zoomFactor > 0.2) {
+                theTrack.zoomFactor = Math.round(theTrack.zoomFactor * 10 - 2) / 10;
+            } else if ((event.detail < 0 || event.wheelDelta > 0) && theTrack.zoomFactor < 4) {
+                theTrack.zoomFactor = Math.round(theTrack.zoomFactor * 10 + 2) / 10;
             }
-            C.Ax = new Array;
+            theTrack.Ax = new Array;
         }
-        var Cw = (new Location(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop + window.pageYOffset)).Cr();
+        var Cw = (new Location(event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop + window.pageYOffset)).normalizeToCanvas();
         if (!focus) {
-            C.A5.add(w.cloneSub(Cw));
+            theTrack.cameraCenter.add(mousePos.cloneSub(Cw));
         }
     }
 }
